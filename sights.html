@@ -237,7 +237,7 @@ function carousel(s){
   if (!s.images.length) return `<div class="car"><div class="noimg">${esc(s.name)}</div></div>`;
   const n = s.images.length;
   return `<div class="car" data-id="${esc(s.id)}" data-i="0" tabindex="0" aria-roledescription="carousel" aria-label="${esc(s.name)} 照片">
-    <div class="track">${s.images.map((im,i) => `<figure><img src="${esc(im.file)}" alt="${esc(im.caption || s.name)}" ${i ? 'loading="lazy"' : ''}><figcaption class="cap">${esc(im.caption||'')}<small>${esc(im.credit||'')}</small></figcaption></figure>`).join('')}</div>
+    <div class="track">${s.images.map((im,i) => `<figure>${i ? `<img data-src="${esc(im.file)}" alt="${esc(im.caption || s.name)}">` : `<img src="${esc(im.file)}" alt="${esc(im.caption || s.name)}" loading="lazy" decoding="async">`}<figcaption class="cap">${esc(im.caption||'')}<small>${esc(im.credit||'')}</small></figcaption></figure>`).join('')}</div>
     ${n>1 ? `<button class="nav p" type="button" data-step="-1" aria-label="上一張">‹</button><button class="nav n" type="button" data-step="1" aria-label="下一張">›</button>
     <span class="count">1 / ${n}</span><div class="dots">${s.images.map((_,i)=>`<button type="button" data-go="${i}" aria-label="第 ${i+1} 張" aria-current="${i===0}"></button>`).join('')}</div>` : ''}
   </div>`;
@@ -287,6 +287,8 @@ function renderList(){
 function go(car, i){
   const n = car.querySelectorAll('.track figure').length; if (n < 2) return;
   i = (i + n) % n; car.dataset.i = i;
+  const figs = car.querySelectorAll('.track img');
+  [i, (i+1)%n].forEach(j => { const im = figs[j]; if (im && im.dataset.src){ im.src = im.dataset.src; im.removeAttribute('data-src'); } });
   car.querySelector('.track').style.transform = `translateX(-${i*100}%)`;
   car.querySelector('.count').textContent = `${i+1} / ${n}`;
   car.querySelectorAll('.dots button').forEach((b,j) => b.setAttribute('aria-current', j===i));
