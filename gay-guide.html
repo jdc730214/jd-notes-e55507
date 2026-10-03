@@ -241,6 +241,7 @@ select,input{border-radius:10px!important}
 .basketfab b{font-family:var(--mono);background:#fff;color:var(--kin);border-radius:999px;padding:0 8px;margin:0 2px}
 .basketfab[hidden]{display:none!important}
 </style>
+<script src="jds.js?v=b1d91255"></script>
 </head>
 <body>
 <header class="site"><div class="wrap bar">
@@ -265,7 +266,7 @@ select,input{border-radius:10px!important}
       <div class="seg" id="citySeg" role="group" aria-label="城市"></div>
       <div class="tools">
         <label class="toggle"><input type="checkbox" id="onlyTop"> 只看最符合</label>
-        <input class="search" id="q" type="search" placeholder="搜尋店名、地址、關鍵字" aria-label="搜尋">
+        <input class="search" id="q" type="search" placeholder="搜尋店名（可打同音字、注音、拼音）" aria-label="搜尋">
       </div>
     </div>
     <div class="frow fold">
@@ -318,7 +319,7 @@ function pool(ignore){
     (ignore==='area' || st.area==='all' || v.area===st.area) &&
     (ignore==='theme' || st.theme==='all' || v.themes.includes(st.theme)) &&
     (!st.top || v.fit===1) &&
-    (!q || [v.name,v.kana,v.addr,v.type,v.note,v.crowd,v.area,CITY[v.city]].join(' ').toLowerCase().includes(q)));
+    (!q || ((t, q) => window.JDS ? JDS.has(q, t) : t.toLowerCase().includes(q))([v.name,v.kana,v.addr,v.type,v.note,v.crowd,v.area,CITY[v.city]].join(' '), q)));
 }
 function renderControls(){
   $('#citySeg').innerHTML = Object.entries(CITY).map(([k,l]) => `<button type="button" data-city="${k}" aria-pressed="${st.city===k}">${l}</button>`).join('');

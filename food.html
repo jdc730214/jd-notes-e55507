@@ -208,6 +208,7 @@ select,input{border-radius:10px!important}
 .basketfab b{font-family:var(--mono);background:#fff;color:var(--kin);border-radius:999px;padding:0 8px;margin:0 2px}
 .basketfab[hidden]{display:none!important}
 </style>
+<script src="jds.js?v=b1d91255"></script>
 </head>
 <body>
 <header class="site"><div class="wrap bar">
@@ -245,7 +246,7 @@ const maps = r => 'https://www.google.com/maps/search/?api=1&query=' + encodeURI
 function match(r){
   const q = st.q.trim().toLowerCase();
   return (st.c==='all' || r.cityKey===st.c) && (st.lv==='all' || r.level===st.lv) && (!st.rv || r.reserve==='不需預約') &&
-    (!q || [r.name,r.name_zh,r.genre,r.signature,r.desc,r.area].join(' ').toLowerCase().includes(q));
+    (!q || ((t, q) => window.JDS ? JDS.has(q, t) : t.toLowerCase().includes(q))([r.name,r.name_zh,r.genre,r.signature,r.desc,r.area].join(' '), q));
 }
 function card(r){
   const d = DISH[r.dish];
@@ -271,7 +272,7 @@ function card(r){
 }
 function render(){
   $('#cityRow').innerHTML = '<span class="flabel">地區</span>' + [['all','全部'], ...CITY].map(([k,l]) => `<button type="button" class="chip" data-c="${k}" aria-pressed="${st.c===k}">${l}<span class="n">${R.filter(r => k==='all' || r.cityKey===k).length}</span></button>`).join('') +
-    `<input class="search" id="q" type="search" placeholder="搜尋店名、料理" aria-label="搜尋" value="${esc(st.q)}">`;
+    `<input class="search" id="q" type="search" placeholder="搜尋店名、料理（可打同音字）" aria-label="搜尋" value="${esc(st.q)}">`;
   $('#lvRow').innerHTML = '<span class="flabel">價位</span>' + [['all','全部'],['低','¥ 平價'],['中','¥¥ 中價'],['高','¥¥¥ 高價']].map(([k,l]) => `<button type="button" class="chip" data-lv="${k}" aria-pressed="${st.lv===k}">${l}</button>`).join('') +
     `<button type="button" class="chip" data-rv="1" aria-pressed="${st.rv}">只看不用預約</button>`;
   $('#q').addEventListener('input', e => { st.q = e.target.value; renderList(); });
