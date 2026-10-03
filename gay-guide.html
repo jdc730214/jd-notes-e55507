@@ -69,6 +69,8 @@ main{padding-block:18px 48px}
 .area h3 span{font:12px var(--mono);color:var(--muted)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
 
+
+.card{scroll-margin-top:120px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .card.top{border-color:var(--kin)}
 .ph{position:relative;aspect-ratio:4/3;background:var(--ai-soft);max-width:100%}
@@ -243,7 +245,7 @@ select,input{border-radius:10px!important}
 <body>
 <header class="site"><div class="wrap bar">
   <a class="brand" href="gay-guide.html" aria-label="JD的旅遊規劃 首頁"><span class="logo"><img src="icon-sm.png" alt="JD"></span><span class="brand-t"><b>JD的旅遊規劃</b><small>Travel Notes 2026</small></span></a>
-  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html" aria-current="page">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html">美食介紹</a><a href="plan.html">行程規劃</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
+  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html" aria-current="page">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html">美食介紹</a><a href="nearby.html">附近／地圖</a><a href="plan.html">行程規劃</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
 </div></header>
 <section class="hero wrap">
   <p class="eyebrow">G Guide</p>
@@ -343,7 +345,7 @@ function photo(v){
 }
 function card(v){
   const ms = v.themes.includes('massage');
-  const links = [`<button type="button" class="addplan" data-plan="venue:${v.id}">＋行程</button>`, `<a class="go" href="route.html#${v.id}">地鐵怎麼去</a>`, `<a href="${maps(v)}" target="_blank" rel="noopener">Google 地圖</a>`];
+  const links = [`<button type="button" class="addplan" data-plan="venue:${v.id}">＋行程</button>`, `<a class="go" href="route.html#${v.id}">地鐵怎麼去</a>`, `<a href="nearby.html#${v.id}">附近</a>`, `<a href="${maps(v)}" target="_blank" rel="noopener">Google 地圖</a>`];
   if(v.gc) links.push(`<a href="https://www.gclick.jp/detail.php?NO=${v.gc}" target="_blank" rel="noopener">Gclick</a>`);
   if(v.site) links.push(`<a href="${esc(v.site)}" target="_blank" rel="noopener">官網</a>`);
   return `<article class="card${v.fit===1?' top':''}" data-id="${v.id}">
@@ -443,6 +445,8 @@ render();
   addEventListener('storage', sync); sync();
 })();
 
+
+const jumpG = () => { const h = decodeURIComponent(location.hash.slice(1)); const el = h && document.getElementById(h); if (el) el.scrollIntoView({block:'start'}); }; jumpG(); addEventListener('load', jumpG);
 </script>
 </body>
 </html>
