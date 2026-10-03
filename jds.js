@@ -184,3 +184,73 @@ function auto(){ AUTO.forEach(id => combo(document.getElementById(id))); }
 window.JDS = {score, has, norm, combo};
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();
+
+/* ---------- 手機版浮動篩選：篩選列捲出畫面時，左下角出現「篩選」按鈕，按下從下方滑出篩選面板 ---------- */
+(function(){
+const CSS = `.fsfab{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:6px;border:0;background:var(--ai,#2747C8);color:#fff;font:700 15px var(--body,system-ui);padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(39,71,200,.35);cursor:pointer}
+.fsfab small{font:600 12px var(--body,system-ui);background:rgba(255,255,255,.22);border-radius:999px;padding:1px 8px}
+.fsback{position:fixed;inset:0;z-index:1100;background:rgba(20,25,40,.45)}
+.fsheet{position:fixed;left:0;right:0;bottom:0;z-index:1101;background:var(--paper,#f5f6f8);border-radius:18px 18px 0 0;box-shadow:0 -10px 40px rgba(20,30,60,.25);max-height:82vh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.fsheet .fshead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 8px}
+.fsheet .fshead b{font:700 18px var(--display,system-ui)}
+.fsheet .fsbody{overflow:auto;padding:4px 16px 12px;flex:1;min-height:0}
+.fsheet .fsbody .wrap{padding:0!important;max-width:none!important}
+.fsheet .frow{display:flex;flex-wrap:wrap!important;gap:6px;margin:0 0 10px;overflow:visible!important;align-items:center}
+.fsheet .frow>*{flex:0 1 auto!important}
+.fsheet .flabel{width:100%!important;font-weight:700;margin:4px 0 0}
+.fsheet .tools{width:100%!important;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fsheet .search{width:100%!important;flex:1 1 100%!important;font-size:16px!important;margin:0!important}
+.fsheet #more{display:block!important}
+.fsheet .frow.fold{display:none!important}
+.fsheet .fsfoot{padding:10px 16px 14px;border-top:1px solid var(--line,#d8dbe4)}
+.fsheet .fsgo{width:100%;border:0;background:var(--ai,#2747C8);color:#fff;font:700 16px var(--body,system-ui);padding:12px;border-radius:999px;cursor:pointer}
+.fsheet .fsx{border:0;background:none;font-size:24px;line-height:1;color:var(--muted,#6b7080);cursor:pointer;padding:4px 8px}
+@media (min-width:641px){.fsfab{display:none!important}}`;
+function init(){
+  const nav = document.querySelector('nav.filters'); if (!nav) return;
+  const inner = nav.firstElementChild; if (!inner) return;
+  const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+  const list = document.getElementById('list');
+  const count = () => list ? list.querySelectorAll('article.card').length : 0;
+  const fab = document.createElement('button'); fab.type = 'button'; fab.className = 'fsfab'; fab.hidden = true;
+  fab.setAttribute('aria-haspopup', 'dialog');
+  const setFab = () => { fab.innerHTML = `篩選 <small>${count()} 筆</small>`; };
+  document.body.appendChild(fab);
+  let open = false, changed = false, back, sheet;
+  const mobile = () => getComputedStyle(nav).position !== 'sticky';
+  let below = false;
+  new IntersectionObserver(es => { const e = es[0]; below = !e.isIntersecting && e.boundingClientRect.top < 0; upd(); }).observe(nav);
+  function upd(){ fab.hidden = open || !below || !mobile(); if (!fab.hidden) setFab(); }
+  addEventListener('resize', upd);
+  if (list) new MutationObserver(() => { if (!fab.hidden) setFab(); if (open) foot(); }).observe(list, {childList: true});
+  function foot(){ const b = sheet && sheet.querySelector('.fsgo'); if (b) b.textContent = `看結果（${count()} 筆）`; }
+  function show(){
+    open = true; changed = false; upd();
+    back = document.createElement('div'); back.className = 'fsback';
+    sheet = document.createElement('div'); sheet.className = 'fsheet'; sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true'); sheet.setAttribute('aria-label', '篩選條件');
+    sheet.innerHTML = '<div class="fshead"><b>篩選條件</b><button type="button" class="fsx" aria-label="關閉">×</button></div><div class="fsbody"></div><div class="fsfoot"><button type="button" class="fsgo"></button></div>';
+    sheet.querySelector('.fsbody').appendChild(inner);
+    document.body.append(back, sheet); foot();
+    document.documentElement.style.overflow = 'hidden';
+    sheet.addEventListener('click', e => { if (e.target.closest('.fsbody')) changed = true; });
+    sheet.addEventListener('input', () => { changed = true; });
+    sheet.addEventListener('change', () => { changed = true; });
+    back.addEventListener('click', hide);
+    sheet.querySelector('.fsx').addEventListener('click', hide);
+    sheet.querySelector('.fsgo').addEventListener('click', hide);
+    document.addEventListener('keydown', esc);
+    sheet.querySelector('.fsgo').focus({preventScroll: true});
+  }
+  function esc(e){ if (e.key === 'Escape') hide(); }
+  function hide(){
+    if (!open) return;
+    nav.appendChild(inner); back.remove(); sheet.remove(); open = false;
+    document.documentElement.style.overflow = '';
+    document.removeEventListener('keydown', esc);
+    if (changed && list){ const y = list.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0); scrollTo({top: Math.max(0, y), behavior: 'auto'}); }
+    setTimeout(upd, 50);
+  }
+  fab.addEventListener('click', show);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
