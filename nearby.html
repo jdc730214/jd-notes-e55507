@@ -61,6 +61,25 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .check input{width:16px;height:16px;accent-color:var(--ai)}
 
 .kindtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+html:has(#fromDlg){scroll-padding-top:calc(var(--navh) + 12px)}
+dialog#fromDlg{border:0;border-radius:18px;padding:0;width:min(92vw,460px);max-height:none;overflow:visible;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
+dialog#fromDlg::backdrop{background:rgba(20,25,40,.45)}
+.dlg{padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{font:700 20px var(--display);margin:0}
+.dlg .dlgto{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopts button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 14px;font:600 15px var(--body);cursor:pointer}
+.qopts button small{font:400 12.5px var(--body);color:var(--muted)}
+.qopts button:hover,.qopts button:focus-visible{border-color:var(--ai);background:var(--ai-soft)}
+.qopts button.now{border-color:var(--ai)}
+.qopts button.now b{color:var(--ai)}
+.dlgact{display:flex;justify-content:flex-end}
+.dlg .field{flex:none}
+.frombar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--paper);border-radius:12px;padding:8px 12px;margin:0 0 12px;font-size:14.5px}
+.frombar span{flex:1;min-width:0}
+.frombar .btn{padding:5px 14px;font-size:13.5px}
+.frombar .back{font-size:13px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+
 .pksearch{display:block;width:100%!important;max-width:420px;margin:4px 0 10px!important;font-size:16px!important;padding:8px 14px!important}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:13px var(--body);padding:4px 12px;border-radius:999px;cursor:pointer}
 .chip[aria-pressed="true"]{border-color:var(--ai);background:var(--ai-soft);color:var(--ai);font-weight:700}
@@ -298,7 +317,7 @@ ul.nbl .acts a,ul.nbl .acts .mini{font-size:12.5px;text-decoration:none;border:1
 .basketfab[hidden]{display:none!important}
 
 </style>
-<script src="jds.js?v=ba19e0f6"></script>
+<script src="jds.js?v=4d77d3fd"></script>
 </head>
 <body>
 <header class="site"><div class="wrap bar">

@@ -59,6 +59,25 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .check input{width:16px;height:16px;accent-color:var(--ai)}
 
 .kindtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+html:has(#fromDlg){scroll-padding-top:calc(var(--navh) + 12px)}
+dialog#fromDlg{border:0;border-radius:18px;padding:0;width:min(92vw,460px);max-height:none;overflow:visible;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
+dialog#fromDlg::backdrop{background:rgba(20,25,40,.45)}
+.dlg{padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{font:700 20px var(--display);margin:0}
+.dlg .dlgto{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.qopts{display:flex;flex-direction:column;gap:8px}
+.qopts button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 14px;font:600 15px var(--body);cursor:pointer}
+.qopts button small{font:400 12.5px var(--body);color:var(--muted)}
+.qopts button:hover,.qopts button:focus-visible{border-color:var(--ai);background:var(--ai-soft)}
+.qopts button.now{border-color:var(--ai)}
+.qopts button.now b{color:var(--ai)}
+.dlgact{display:flex;justify-content:flex-end}
+.dlg .field{flex:none}
+.frombar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--paper);border-radius:12px;padding:8px 12px;margin:0 0 12px;font-size:14.5px}
+.frombar span{flex:1;min-width:0}
+.frombar .btn{padding:5px 14px;font-size:13.5px}
+.frombar .back{font-size:13px;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+
 .pksearch{display:block;width:100%!important;max-width:420px;margin:4px 0 10px!important;font-size:16px!important;padding:8px 14px!important}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:13px var(--body);padding:4px 12px;border-radius:999px;cursor:pointer}
 .chip[aria-pressed="true"]{border-color:var(--ai);background:var(--ai-soft);color:var(--ai);font-weight:700}
@@ -269,7 +288,7 @@ select,input{border-radius:10px!important}
   .search{margin-left:0!important}
 }
 </style>
-<script src="jds.js?v=ba19e0f6"></script>
+<script src="jds.js?v=4d77d3fd"></script>
 </head>
 <body>
 <header class="site"><div class="wrap bar">
@@ -309,6 +328,17 @@ select,input{border-radius:10px!important}
   </section>
 
   <section class="panel" id="result" aria-live="polite"></section>
+<dialog id="fromDlg" aria-labelledby="dlgT">
+  <form method="dialog" class="dlg">
+    <h2 id="dlgT">從哪裡出發？</h2>
+    <p class="dlgto" id="dlgTo"></p>
+    <div class="qopts" id="dlgQuick"></div>
+    <div class="field"><label for="dlgFrom">或打字搜尋其他地點、車站</label><select id="dlgFrom"></select></div>
+    <p class="gpsmsg" id="dlgMsg" hidden></p>
+    <div class="dlgact"><button class="btn" value="cancel">取消</button></div>
+  </form>
+</dialog>
+
 
   <section class="panel mine" aria-label="我的地點">
     <h2>我的地點</h2>
@@ -725,7 +755,7 @@ function renderResult(){
     const d = sel[0];
     if (!d){ R.innerHTML = '<p class="empty">在上面點一個想去的地方，就會顯示怎麼搭車。</p>'; return; }
     const r = planLeg(o, d);
-    R.innerHTML = `<h2 style="font:600 18px var(--display);margin:0 0 8px">${esc(o.name)} → ${esc(d.name)}</h2>
+    R.innerHTML = `${fromBar(o)}<h2 style="font:600 18px var(--display);margin:0 0 8px">${esc(o.name)} → ${esc(d.name)}</h2>
       ${infoCard(d)}
       <div class="summary"><span class="big">約 ${fmtMin(r.total)}</span><span class="sub">單程・含步行與等車</span></div>
       ${r.html}<div class="leglinks" style="margin-top:10px"><a class="btn primary" target="_blank" rel="noopener" href="${gmaps(o.kind==='gps'?null:o, d)}">Google 地圖路線 ↗</a><a class="btn" target="_blank" rel="noopener" href="${gmaps(null, d)}">從目前位置導航 ↗</a></div>`;
@@ -742,7 +772,7 @@ function planMulti(){
   const seq = [o, ...ord, ...(back ? [o] : [])];
   let total = 0, blocks = [];
   for (let i=1;i<seq.length;i++){ total += planLeg(seq[i-1], seq[i]).total; blocks.push(legBlock(i, seq[i-1], seq[i], i===1)); }
-  $('#result').innerHTML = `<h2 style="font:600 18px var(--display);margin:0 0 8px">${$('#keepOrder').checked ? '照你點選的順序' : '建議順序'}</h2>
+  $('#result').innerHTML = `${fromBar(o)}<h2 style="font:600 18px var(--display);margin:0 0 8px">${$('#keepOrder').checked ? '照你點選的順序' : '建議順序'}</h2>
     <div class="summary"><span class="big">約 ${fmtMin(total)}</span><span class="sub">交通時間</span><span class="sub">${ord.length} 個地點・不含在每個地點停留的時間</span></div>
     <p class="alt" style="margin:-4px 0 10px">順序只依交通時間排，沒有考慮營業時間和末班車（例如往勝尾寺的巴士末班 15:00），請展開各段的介紹卡確認。</p>
     <ol class="order"><li class="home"><i>起</i>${esc(o.name)}</li>${ord.map((p,i)=>`<li><i>${i+1}</i>${esc(p.name)}</li>`).join('')}${back ? `<li class="home"><i>回</i>${esc(o.name)}</li>` : ''}</ol>
@@ -752,8 +782,8 @@ function planMulti(){
 function renderAll(){ renderPick(); renderBar(); renderResult(); saveUi(); }
 
 /* ---------- 目前位置 ---------- */
-function useGps(){
-  const msg = $('#gpsMsg'); msg.hidden = false; msg.textContent = '定位中…';
+function useGps(msgEl, after){
+  const msg = msgEl instanceof HTMLElement ? msgEl : $('#gpsMsg'); msg.hidden = false; msg.textContent = '定位中…';
   if (!navigator.geolocation){ msg.textContent = '這個瀏覽器不能定位，請從清單選起點。'; return; }
   navigator.geolocation.getCurrentPosition(pos => {
     const {latitude:la, longitude:lo} = pos.coords;
@@ -767,7 +797,7 @@ function useGps(){
     fillSelect($('#from'), 'gps'); $('#from').value = 'gps';
     st.city = city;
     msg.textContent = `最近的車站是 ${CITY[city]} ${n} 站（${codes.join('/')}），直線約 ${Math.round(best.dist)} 公尺，走路約 ${walk} 分。`;
-    renderAll();
+    if (after) after(); else renderAll();
   }, err => { msg.textContent = '無法取得位置（' + (err.code===1 ? '沒有允許定位' : '定位失敗') + '），請從清單選起點。'; }, {enableHighAccuracy:true, timeout:10000, maximumAge:60000});
 }
 
@@ -809,9 +839,48 @@ const setMode = m => { st.mode = m; $('#mSingle').setAttribute('aria-pressed', m
 $('#mSingle').addEventListener('click', () => setMode('single'));
 $('#mMulti').addEventListener('click', () => setMode('multi'));
 $('#from').addEventListener('change', renderAll);
-$('#gpsBtn').addEventListener('click', useGps);
+$('#gpsBtn').addEventListener('click', () => useGps());
 $('#planBtn').addEventListener('click', planMulti);
 $('#clearSel').addEventListener('click', () => { st.sel = []; renderAll(); });
+
+
+/* ---------- 起點視窗 ---------- */
+let CAME = false;
+const fromBar = o => `<div class="frombar"><span>從 <b>${esc(o.name)}</b> 出發</span><button type="button" class="btn" data-chfrom="1">改起點</button>${CAME ? '<button type="button" class="back" data-back="1">← 回到剛才的頁面</button>' : ''}</div>`;
+function todayStay(){
+  const t = Date.now();
+  if (t >= Date.parse('2026-10-29T00:00:00+09:00') && t < Date.parse('2026-11-02T11:00:00+09:00')) return 'stay:stay-osaka';
+  if (t >= Date.parse('2026-11-02T11:00:00+09:00') && t < Date.parse('2026-11-06T00:00:00+09:00')) return 'stay:stay-nagoya';
+  return null;
+}
+function openFrom(){
+  const dlg = $('#fromDlg'); if (!dlg.showModal){ $('#from').focus(); return; }
+  const d = st.mode==='single' ? byId(st.sel[0]) : null;
+  $('#dlgTo').textContent = d ? `要去：${d.name}` : '選好起點就會重新計算路線';
+  $('#dlgMsg').hidden = true;
+  const cur = $('#from').value, now = todayStay();
+  let last = null; try { last = localStorage.getItem('route-from'); } catch(e) {}
+  const ids = [now, 'stay:stay-osaka', 'stay:stay-nagoya', last, cur].filter((x, i, a) => x && x !== 'gps' && byId(x) && a.indexOf(x) === i);
+  const lab = id => id === now ? '今天住這裡' : id.startsWith('stay:') ? '住宿' : id === cur ? '目前選的起點' : '上次的起點';
+  $('#dlgQuick').innerHTML = `<button type="button" data-qgps="1"><b>📍 我現在的位置</b><small>用手機定位找最近的地鐵站（第一次會問是否允許定位）</small></button>` +
+    ids.map(id => `<button type="button" data-qfrom="${esc(id)}" class="${id === now ? 'now' : ''}"><b>${esc(byId(id).name)}</b><small>${lab(id)}</small></button>`).join('');
+  fillSelect($('#dlgFrom'), '');
+  dlg.showModal();
+}
+function chooseFrom(id){
+  if (!byId(id)) return;
+  $('#fromDlg').close();
+  $('#from').value = id; renderAll();
+  setTimeout(() => $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}), 120);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.chfrom) openFrom();
+  else if (b.dataset.qfrom) chooseFrom(b.dataset.qfrom);
+  else if (b.dataset.qgps) useGps($('#dlgMsg'), () => chooseFrom('gps'));
+  else if (b.dataset.back) history.back();
+});
+document.addEventListener('change', e => { if (e.target.id === 'dlgFrom' && e.target.value) chooseFrom(e.target.value); });
 
 /* ---------- 啟動 ---------- */
 fillSelect($('#from')); fillSta(); renderMine();
@@ -823,6 +892,7 @@ const hv = hash && (byId('venue:'+hash) || byId('landmark:'+hash) || byId('food:
 if (hv){ st.mode = 'single'; st.kind = hv.kind; st.city = hv.city; st.sel = [hv.id]; }
 if (!st.sel.length && st.mode==='single' && byId('venue:hagakure') && st.kind==='landmark'){ /* 預設示範 */ }
 setMode(st.mode);
+if (hv){ CAME = !!document.referrer; renderAll(); openFrom(); }
 document.addEventListener('input', e => { if (e.target.id === 'pkSearch') renderPick(); });
 </script>
 </body>

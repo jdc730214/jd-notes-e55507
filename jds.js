@@ -179,7 +179,7 @@ function combo(sel){
   sel.addEventListener('change', sync);
   sync();
 }
-const AUTO = ['from', 'nbSel', 'nbSel2', 'dFrom', 'dTo', 'pSta'];
+const AUTO = ['from', 'dlgFrom', 'nbSel', 'nbSel2', 'dFrom', 'dTo', 'pSta'];
 function auto(){ AUTO.forEach(id => combo(document.getElementById(id))); }
 window.JDS = {score, has, norm, combo};
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
