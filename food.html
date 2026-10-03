@@ -202,12 +202,17 @@ select,input{border-radius:10px!important}
   .grid,.pick{grid-template-columns:1fr!important}
   .search{margin-left:0!important}
 }
+.addplan{font:500 13px var(--body);border:1px dashed var(--ai)!important;background:var(--surface);color:var(--ai);padding:4px 12px;border-radius:999px;cursor:pointer}
+.addplan[aria-pressed="true"]{background:var(--ai-soft);border-style:solid!important;font-weight:700}
+.basketfab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--kin);color:#fff!important;text-decoration:none;font:700 15px var(--body);padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(217,105,46,.35)}
+.basketfab b{font-family:var(--mono);background:#fff;color:var(--kin);border-radius:999px;padding:0 8px;margin:0 2px}
+.basketfab[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <header class="site"><div class="wrap bar">
   <a class="brand" href="gay-guide.html" aria-label="JD的旅遊規劃 首頁"><span class="logo"><img src="icon-sm.png" alt="JD"></span><span class="brand-t"><b>JD的旅遊規劃</b><small>Travel Notes 2026</small></span></a>
-  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html" aria-current="page">美食介紹</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
+  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html" aria-current="page">美食介紹</a><a href="plan.html">行程規劃</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
 </div></header>
 <section class="hero wrap">
   <p class="eyebrow">Food</p>
@@ -261,7 +266,7 @@ function card(r){
         <dt>預約</dt><dd><span class="rv${r.reserve==='必須預約'?' must':''}">${esc(r.reserve)}</span>${r.tel ? ' '+telLink(r.tel) : (r.reserve!=='不需預約' ? ' <span class="note">（無電話，請用網路訂位）</span>' : '')}</dd>
       </dl>
       ${r.note ? `<div class="note">${esc(r.note)}</div>` : ''}
-      <div class="links"><a class="go" href="route.html#${esc(r.id)}">地鐵怎麼去</a>${r.reserve_url ? `<a href="${esc(r.reserve_url)}" target="_blank" rel="noopener">訂位 ↗</a>` : ''}${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${/tabelog/.test(r.url) ? 'Tabelog' : '官網'} ↗</a>` : ''}<a href="${maps(r)}" target="_blank" rel="noopener">Google 地圖</a></div>
+      <div class="links"><button type="button" class="addplan" data-plan="food:${esc(r.id)}">＋行程</button><a class="go" href="route.html#${esc(r.id)}">地鐵怎麼去</a>${r.reserve_url ? `<a href="${esc(r.reserve_url)}" target="_blank" rel="noopener">訂位 ↗</a>` : ''}${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${/tabelog/.test(r.url) ? 'Tabelog' : '官網'} ↗</a>` : ''}<a href="${maps(r)}" target="_blank" rel="noopener">Google 地圖</a></div>
     </div></article>`;
 }
 function render(){
@@ -295,6 +300,29 @@ document.addEventListener('click', e => {
 render();
 const jump = () => { const h = location.hash.slice(1); const el = h && document.getElementById(h); if (el) el.scrollIntoView({block:'start'}); };
 jump(); window.addEventListener('load', jump);
+
+/* ---------- 行程籃（與「行程規劃」頁共用） ---------- */
+(function(){
+  const KEY = 'jd-basket';
+  const get = () => { try { return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e) { return []; } };
+  const set = v => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch(e) {} };
+  const fab = document.createElement('a'); fab.className = 'basketfab'; fab.href = 'plan.html'; document.body.appendChild(fab);
+  function sync(){
+    const b = get();
+    fab.innerHTML = `行程籃 <b>${b.length}</b> → 排行程`; fab.hidden = !b.length;
+    document.querySelectorAll('[data-plan]').forEach(x => { const on = b.includes(x.dataset.plan); x.setAttribute('aria-pressed', on); x.textContent = on ? '✓ 已加入行程' : '＋行程'; });
+  }
+  document.addEventListener('click', e => {
+    const x = e.target.closest('[data-plan]'); if (!x) return;
+    e.preventDefault(); e.stopPropagation();
+    const b = get(), id = x.dataset.plan, i = b.indexOf(id);
+    if (i >= 0) b.splice(i,1); else b.push(id);
+    set(b); sync();
+  }, true);
+  new MutationObserver(() => { clearTimeout(sync.t); sync.t = setTimeout(sync, 50); }).observe(document.body, {childList:true, subtree:true});
+  addEventListener('storage', sync); sync();
+})();
+
 </script>
 </body>
 </html>
