@@ -75,8 +75,10 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .o3one{font-size:13.5px;color:var(--muted);margin:0 0 6px}
 
 html:has(#fromDlg){scroll-padding-top:calc(var(--navh) + 12px)}
-dialog#fromDlg{border:0;border-radius:18px;padding:0;width:min(92vw,460px);max-height:none;overflow:visible;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
-dialog#fromDlg::backdrop{background:rgba(20,25,40,.45)}
+#fromDlg{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;padding:16px}
+#fromDlg[hidden]{display:none!important}
+#fromDlg .mdlg-back{position:absolute;inset:0;background:rgba(20,25,40,.45)}
+#fromDlg .mdlg-box{position:relative;width:min(100%,460px);max-height:calc(100% - 16px);overflow:auto;border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
 .dlg{padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
 .dlg h2{font:700 20px var(--display);margin:0}
 .dlg .dlgto{margin:-6px 0 0;color:var(--muted);font-size:14px}

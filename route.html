@@ -73,8 +73,10 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .o3one{font-size:13.5px;color:var(--muted);margin:0 0 6px}
 
 html:has(#fromDlg){scroll-padding-top:calc(var(--navh) + 12px)}
-dialog#fromDlg{border:0;border-radius:18px;padding:0;width:min(92vw,460px);max-height:none;overflow:visible;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
-dialog#fromDlg::backdrop{background:rgba(20,25,40,.45)}
+#fromDlg{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;padding:16px}
+#fromDlg[hidden]{display:none!important}
+#fromDlg .mdlg-back{position:absolute;inset:0;background:rgba(20,25,40,.45)}
+#fromDlg .mdlg-box{position:relative;width:min(100%,460px);max-height:calc(100% - 16px);overflow:auto;border-radius:18px;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(20,30,60,.3)}
 .dlg{padding:20px 18px 16px;display:flex;flex-direction:column;gap:12px}
 .dlg h2{font:700 20px var(--display);margin:0}
 .dlg .dlgto{margin:-6px 0 0;color:var(--muted);font-size:14px}
@@ -341,16 +343,16 @@ select,input{border-radius:10px!important}
   </section>
 
   <section class="panel" id="result" aria-live="polite"></section>
-<dialog id="fromDlg" aria-labelledby="dlgT">
-  <form method="dialog" class="dlg">
+<div id="fromDlg" role="dialog" aria-modal="true" aria-labelledby="dlgT" hidden><div class="mdlg-back" data-dlgclose="1"></div><div class="mdlg-box">
+  <form class="dlg" onsubmit="return false">
     <h2 id="dlgT">從哪裡出發？</h2>
     <p class="dlgto" id="dlgTo"></p>
     <div class="qopts" id="dlgQuick"></div>
     <div class="field"><label for="dlgFrom">或打字搜尋其他地點、車站</label><select id="dlgFrom"></select></div>
     <p class="gpsmsg" id="dlgMsg" hidden></p>
-    <div class="dlgact"><button class="btn" value="cancel">取消</button></div>
+    <div class="dlgact"><button type="button" class="btn" data-dlgclose="1">取消</button></div>
   </form>
-</dialog>
+</div></div>
 
 
   <section class="panel mine" aria-label="我的地點">
@@ -1276,7 +1278,7 @@ function todayStay(){
   return null;
 }
 function openFrom(){
-  const dlg = $('#fromDlg'); if (!dlg.showModal){ $('#from').focus(); return; }
+  const dlg = $('#fromDlg');
   const d = st.mode==='single' ? byId(st.sel[0]) : null;
   $('#dlgTo').textContent = d ? `要去：${d.name}` : '選好起點就會重新計算路線';
   $('#dlgMsg').hidden = true;
@@ -1287,21 +1289,26 @@ function openFrom(){
   $('#dlgQuick').innerHTML = `<button type="button" data-qgps="1"><b>📍 我現在的位置</b><small>用手機定位找最近的地鐵站（第一次會問是否允許定位）</small></button>` +
     ids.map(id => `<button type="button" data-qfrom="${esc(id)}" class="${id === now ? 'now' : ''}"><b>${esc(byId(id).name)}</b><small>${lab(id)}</small></button>`).join('');
   fillSelect($('#dlgFrom'), '');
-  dlg.showModal();
+  dlg.hidden = false; document.documentElement.style.overflow = 'hidden';
+  setTimeout(() => dlg.querySelector('#dlgQuick button')?.focus({preventScroll: true}), 30);
 }
+function closeFrom(){ const dlg = $('#fromDlg'); if (dlg.hidden) return; dlg.hidden = true; document.documentElement.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFrom(); });
 function chooseFrom(id){
   if (!byId(id)) return;
-  $('#fromDlg').close();
+  closeFrom();
   $('#from').value = id; renderAll();
   setTimeout(() => $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}), 120);
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.chfrom) openFrom();
+  if (b.dataset.dlgclose) closeFrom();
+  else if (b.dataset.chfrom) openFrom();
   else if (b.dataset.qfrom) chooseFrom(b.dataset.qfrom);
   else if (b.dataset.qgps) useGps($('#dlgMsg'), () => chooseFrom('gps'));
   else if (b.dataset.back) history.back();
 });
+document.addEventListener('click', e => { if (e.target.classList && e.target.classList.contains('mdlg-back')) closeFrom(); });
 document.addEventListener('change', e => { if (e.target.id === 'dlgFrom' && e.target.value) chooseFrom(e.target.value); });
 
 /* ---------- 啟動 ---------- */
@@ -1310,7 +1317,7 @@ st.sel = st.sel.filter(id => byId(id));
 let f0 = null; try { f0 = localStorage.getItem('route-from'); } catch(e) {}
 if (f0 && byId(f0)) $('#from').value = f0; else if (byId('stay:stay-osaka')) $('#from').value = 'stay:stay-osaka'; else if (byId('landmark:dotonbori')) $('#from').value = 'landmark:dotonbori';
 const hash = location.hash.slice(1);
-const hv = hash && (byId('venue:'+hash) || byId('landmark:'+hash) || byId('food:'+hash));
+const hv = hash && (byId('venue:'+hash) || byId('landmark:'+hash) || byId('food:'+hash) || byId('stay:'+hash));
 if (hv){ st.mode = 'single'; st.kind = hv.kind; st.city = hv.city; st.sel = [hv.id]; }
 if (!st.sel.length && st.mode==='single' && byId('venue:hagakure') && st.kind==='landmark'){ /* 預設示範 */ }
 setMode(st.mode);
