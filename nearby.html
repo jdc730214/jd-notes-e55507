@@ -873,6 +873,23 @@ function subFare(city, r){
 
 
 /* ---------- 繪製 ---------- */
+
+/* Yahoo!乗換案内：帶入最近的車站／巴士站（遠郊景點用下車站），可指定日期與出發時間 */
+const YST = {usj:'ユニバーサルシティ', kamikochi:'上高地バスターミナル', nagoya:'名古屋', hozugawa:'亀岡', jukkokubune:'中書島', uji:'宇治', kibune:'貴船', ohara:'大原', hieizan:'ケーブル延暦寺', amanohashidate:'天橋立', hikone:'彦根', shirahige:'近江高島', miho:'ミホミュージアム', arimatsu:'有松', inuyama:'犬山', ghibli:'愛・地球博記念公園', meijimura:'明治村', tokoname:'常滑', nabana:'なばなの里', ise:'内宮前', shirakawago:'白川郷', takayama:'高山', gero:'下呂', korankei:'香嵐渓', toyokawa:'豊川稲荷', kuramaonsen:'鞍馬温泉', oharasanso:'大原', ryusenji:'竜泉寺', yuamino:'長島温泉', yunoyama:'湯の山温泉', minohonsen:'箕面', kinosaki:'城崎温泉', todaiji:'近鉄奈良', narapark:'近鉄奈良', himeji:'姫路', takeda:'竹田', kitano:'神戸三宮', kobeport:'元町', mayasan:'摩耶ケーブル', kada:'加太', koyasan:'高野山', arima:'有馬温泉', katsuoji:'勝尾寺', minoo:'箕面', mozu:'百舌鳥'};
+function ystation(p){
+  const id = String(p.id||'').split(':').pop();
+  if (YST[id]) return YST[id];
+  if (p.via) return p.via.station;
+  if (p.keihan) return p.keihan.station;
+  if (p.rail && p.rail.station) return p.rail.station;
+  return String(p.station || p.name || '').replace(/溫/g, '温');
+}
+function yahoo(o, d, date, min){
+  let u = 'https://transit.yahoo.co.jp/search/result?from=' + encodeURIComponent(ystation(o)) + '&to=' + encodeURIComponent(ystation(d)) + '&type=1&ticket=ic&expkind=1&ws=3&s=0&al=0&shin=1&ex=1&hb=1&lb=1&sr=0';
+  if (date && min != null){ const [y, m, dd] = date.split('-'); const t = Math.round(min), hh = Math.floor(t / 60) % 24, mm = t % 60;
+    u += `&y=${y}&m=${m}&d=${dd}&hh=${String(hh).padStart(2, '0')}&m1=${Math.floor(mm / 10)}&m2=${mm % 10}`; }
+  return u;
+}
 function gmaps(o, d, mode='transit'){
   const q = p => p.addr || (p.kind==='station' ? p.station+'駅' : p.name);
   let u = 'https://www.google.com/maps/dir/?api=1&travelmode='+mode+'&destination='+encodeURIComponent(q(d));
