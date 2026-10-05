@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>行程建議</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:ital,wght@1,600&family=Inter:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 暖簾標頭 → 黏性目錄 chips → 每種票一個段落（說明、編號步驟配圖、票券表、提醒） */
+:root{
+  --paper:#EEF0F4; --surface:#FFFFFF; --ink:#191C2B; --muted:#5A6075; --line:#D6DAE4;
+  --ai:#27358A; --ai-soft:#E3E6F5; --kin:#A9780F; --kin-soft:#F6EBCF; --warn:#9A3B1F;
+  --display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:64px}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--body)}
+a{color:var(--ai)}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+header.top{padding-block:24px 0;border-bottom:1px solid var(--line);background:var(--surface)}
+.noren{display:flex;gap:6px;margin-bottom:12px}
+.noren span{width:34px;height:10px;background:var(--ai);border-radius:0 0 3px 3px}
+.noren span:nth-child(2n){opacity:.75}
+h1{font:900 clamp(26px,4.4vw,38px)/1.2 var(--display);margin:0;letter-spacing:.02em}
+.lede{color:var(--muted);margin:6px 0 0;max-width:64ch}
+.tabs{display:flex;gap:4px;margin-top:16px;flex-wrap:wrap}
+.tabs a{padding:8px 16px;text-decoration:none;color:var(--muted);border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;font-weight:500}
+.tabs a[aria-current="page"]{color:var(--ink);background:var(--paper);border-color:var(--line);margin-bottom:-1px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+nav.toc a{flex:none;font-size:13px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+nav.toc a:hover{border-color:var(--ai);color:var(--ai)}
+main{padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+.quick{background:var(--kin-soft);border:1px solid var(--kin);border-radius:12px;padding:14px 16px}
+.quick h2{font:600 17px var(--display);margin:0 0 6px;color:var(--kin)}
+.quick ul{margin:0;padding-left:1.2em}
+section.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px;min-width:0}
+section.sec>h2{font:900 24px/1.3 var(--display);margin:0 0 6px}
+.intro{margin:0 0 12px;max-width:70ch}
+ol.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:start}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--ai);color:var(--surface);font:600 14px/28px var(--mono);text-align:center}
+.stx{min-width:0}
+.stx figure{margin:8px 0 0;max-width:460px}
+.stx img{border-radius:8px;width:100%}
+figcaption{font-size:12px;color:var(--muted);margin-top:4px;word-break:break-word}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;margin:0 0 14px}
+.gallery figure{margin:0;min-width:0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
+.tkwrap{overflow-x:auto;margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th{text-align:left;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 8px}
+td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top}
+td.pr{font:600 13.5px var(--mono);white-space:nowrap}
+.tips{margin:0 0 8px;padding:10px 14px 10px 30px;background:var(--paper);border-radius:8px;font-size:14px}
+.src{font-size:12px;color:var(--muted);word-break:break-all}
+.src a{color:var(--muted)}
+.h3{font:600 15px var(--display);margin:14px 0 6px;color:var(--ai)}
+footer{font-size:12.5px;color:var(--muted);padding-block:0 40px}
+
+/* ===== 共用版型：旅遊雜誌風（白底大照片、宋體標題、圓角柔影卡片；鈷藍取自 icon 帽子＋暖橘點綴） ===== */
+:root{
+  --paper:#F5F6F8; --surface:#FFFFFF; --ink:#1E2026; --muted:#676B75; --line:#E4E6EB;
+  --ai:#2747C8; --ai-soft:#EEF1FB; --kin:#D9692E; --kin-soft:#FCEEE4; --warn:#B23A2A;
+  --display:"Chiron Sung HK","Noto Serif TC","PMingLiU",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --latin:"Playfair Display",Georgia,serif;
+  --kick:"Inter","Noto Sans TC",sans-serif;
+  --shadow:0 2px 4px rgba(20,25,40,.04),0 10px 30px rgba(20,25,40,.08);
+  --shadow-sm:0 1px 2px rgba(20,25,40,.04),0 4px 14px rgba(20,25,40,.06);
+  --navh:90px;
+  color-scheme:light;
+}
+@media (max-width:720px){ :root{ --navh:118px } }
+html{scroll-padding-top:calc(var(--navh) + 70px)}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;letter-spacing:.01em}
+a{color:var(--ai);text-underline-offset:3px}
+
+/* ---- 固定導覽列 ---- */
+header.site{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line),0 8px 24px rgba(20,25,40,.05)}
+header.site .bar{display:flex;align-items:center;gap:24px;min-height:var(--navh);padding-block:12px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);flex:none;min-width:0}
+.logo{position:relative;width:60px;height:60px;flex:none}
+.logo img{position:relative;z-index:1;width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 6px 18px rgba(39,71,200,.28);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.logo::after{content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);background-size:260% 100%;background-position:160% 0;animation:logo-shine 7s ease-in-out infinite}
+.brand:hover .logo img,.brand:focus-visible .logo img{transform:rotate(-8deg) scale(1.07)}
+@keyframes logo-shine{0%,72%{background-position:160% 0}100%{background-position:-60% 0}}
+.brand-t{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.brand-t b{font:900 24px/1.15 var(--display);letter-spacing:.05em;white-space:nowrap}
+.brand-t small{font:italic 600 13.5px/1.3 var(--latin);color:var(--kin);letter-spacing:.06em;white-space:nowrap;margin-top:3px}
+nav.sitetabs{display:flex;gap:24px;margin-left:auto;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav.sitetabs::-webkit-scrollbar{display:none}
+nav.sitetabs a{position:relative;flex:none;padding:10px 0;font:500 15.5px var(--body);color:var(--muted);text-decoration:none;letter-spacing:.04em;transition:color .2s}
+nav.sitetabs a:hover{color:var(--ink)}
+nav.sitetabs a[aria-current="page"]{color:var(--ink);font-weight:700}
+nav.sitetabs a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:3px;border-radius:3px;background:var(--kin)}
+@media (max-width:720px){
+  header.site .bar{flex-wrap:wrap;gap:6px 12px;padding-block:10px 0}
+  nav.sitetabs{order:2;width:calc(100% + 32px);margin:0 -16px;padding-inline:16px;gap:20px;border-top:1px solid var(--line)}
+  nav.sitetabs a{padding:10px 0 9px;font-size:15px}
+  .logo,.logo img{width:46px;height:46px}
+  .brand-t b{font-size:20px}
+  .brand-t small{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){ .logo::after{animation:none} .logo img{transition:none} }
+
+/* ---- 頁首（雜誌扉頁） ---- */
+.hero{padding-block:46px 26px}
+.hero .eyebrow{font:700 12.5px var(--kick);letter-spacing:.3em;text-transform:uppercase;color:var(--kin);margin:0 0 6px}
+.hero h1{font:900 clamp(32px,6vw,52px)/1.12 var(--display);letter-spacing:.03em;margin:0;text-wrap:balance}
+.hero .lede{max-width:58ch;color:var(--muted);margin:12px 0 0;font-size:16px}
+.hero .meta{margin-top:14px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 18px}
+.hero .meta b{color:var(--ink);font-weight:500}
+header.top,.noren{display:none!important}
+
+/* ---- 篩選列接在導覽列下方 ---- */
+.filters,nav.toc{top:var(--navh)!important;background:rgba(245,246,248,.95)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)!important}
+
+/* ---- 卡片與面板：圓角、柔和陰影、無框線 ---- */
+.card,.panel,section.sec,.dish,.route,.quick,details.leg{border:0!important;border-radius:16px!important;box-shadow:var(--shadow)!important;background:var(--surface)}
+.route,.quick,details.leg{box-shadow:var(--shadow-sm)!important}
+.card{overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+@media (hover:hover){ .card:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(20,25,40,.05),0 18px 40px rgba(20,25,40,.12)!important} }
+.card.top{box-shadow:0 0 0 2px var(--kin),var(--shadow)!important}
+.ph,.car,.noph{border-radius:0!important}
+.info img,.stx img,.gallery img,.dish img{border-radius:12px!important}
+.dish img{border-radius:0!important}
+.mylist li,.tips,.sig,.tk{border-radius:10px!important}
+
+/* ---- 按鈕、標籤：膠囊 ---- */
+.chip,.seg,.btn,.links a,.search,.tag,.rv,.lv,.conf,.linepill,.badge{border-radius:999px!important}
+select,input{border-radius:10px!important}
+.chip{border:1px solid var(--line)!important;background:var(--surface);color:var(--ink);font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ai)!important;border-color:var(--ai)!important;color:#fff!important}
+.seg{border:1px solid var(--line)!important;background:var(--surface)!important;overflow:hidden}
+.seg button[aria-pressed="true"]{background:var(--ai)!important;color:#fff!important}
+.btn.primary,.links a.go{background:var(--ai)!important;border-color:var(--ai)!important;color:#fff!important}
+.links a{border-color:var(--line)!important}
+.tag{background:var(--ai-soft)!important;color:var(--ai)!important;border:0!important;padding:2px 10px!important}
+.badge{padding:3px 11px!important}
+.badge.f1{background:var(--kin)!important;border-color:var(--kin)!important;color:#fff!important}
+.sig{background:var(--kin-soft)!important}
+.sig b{color:var(--kin)!important}
+.lv.h{background:var(--kin)!important;border-color:var(--kin)!important}
+
+/* ---- 標題字 ---- */
+.name,.city>h2,.group>h2,section.sec>h2,.panel>h2,.infotext h3,.dish b,.parth,.area>h3,.area h3,.route h3,.quick h2{font-family:var(--display)!important;letter-spacing:.03em}
+.name{font-weight:900!important}
+.city>h2,.group>h2{font-weight:900!important;font-size:clamp(28px,4.5vw,36px)!important;margin-top:8px}
+.city>h2 small,.group>h2 small{font-family:var(--kick)!important;letter-spacing:.12em}
+.area>h3,.area h3{font-weight:700!important;border-bottom:0!important;padding-bottom:0!important}
+.area>h3::before,.area h3::before{content:"";display:inline-block;width:18px;height:3px;border-radius:3px;background:var(--kin);vertical-align:middle;margin-right:8px}
+.parth{color:var(--ai)!important}
+
+/* ---- 手機 ---- */
+@media (max-width:720px){
+  .filters,nav.toc{position:static!important}
+  .filters .frow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .filters .frow::-webkit-scrollbar{display:none}
+  .filters .frow>*{flex:none}
+  .filters .flabel{width:auto!important;margin-right:4px}
+  .filters .tools{width:auto!important}
+  .filters .search{width:200px!important}
+  #frow .search{width:180px!important}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  .hero{padding-block:28px 16px}
+  .grid,.pick{grid-template-columns:1fr!important}
+  .search{margin-left:0!important}
+}
+
+.sgnav{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin:8px 0 28px}
+.sgnav a{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(20,30,60,.08)}
+.sgnav img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;max-width:100%}
+.sgnav b{display:block;font:700 17px var(--display);padding:10px 14px 2px}
+.sgnav span{display:block;font-size:13px;color:var(--muted);padding:0 14px 12px}
+.trip{margin:0 0 48px}
+.trip>h2{font:900 clamp(24px,5vw,34px)/1.25 var(--display);margin:0 0 6px;text-wrap:balance}
+.trip .sub{color:var(--muted);margin:0 0 12px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.facts span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13.5px}
+.facts b{color:var(--ai)}
+.cover{border-radius:16px;overflow:hidden;margin:0 0 16px}
+.cover img{width:100%;max-height:360px;object-fit:cover;display:block}
+.summary-p{font-size:15.5px;line-height:1.75;max-width:70ch}
+.dsw{display:flex;gap:6px;margin:18px 0 10px;flex-wrap:wrap}
+.dsw input{position:absolute;opacity:0;pointer-events:none}
+.dsw label{border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;background:var(--surface);font-weight:600}
+.dsw input:checked+label{background:var(--ai);border-color:var(--ai);color:#fff}
+.dsw input:focus-visible+label{outline:2px solid var(--ai);outline-offset:2px}
+.tbl.holiday,.t-holiday,.st.x-weekday{display:none}
+.trip:has(.dsw input[value="holiday"]:checked) .st.x-weekday{display:block}
+.trip:has(.dsw input[value="holiday"]:checked) .st.x-holiday{display:none}
+.trip:has(.dsw input[value="holiday"]:checked) .tbl.holiday{display:block}
+.trip:has(.dsw input[value="holiday"]:checked) .tbl.weekday{display:none}
+.trip:has(.dsw input[value="holiday"]:checked) .t-holiday{display:inline-block}
+.trip:has(.dsw input[value="holiday"]:checked) .t-weekday{display:none}
+.tl{width:100%;min-width:0!important;table-layout:fixed;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden;font-size:14.5px}
+.tl td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tl td:first-child{font:600 14px var(--mono);color:var(--ai);white-space:nowrap;width:64px;font-variant-numeric:tabular-nums}
+.steps2{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-direction:column;gap:18px}
+.st{background:var(--surface);border-radius:16px;padding:16px;box-shadow:0 6px 18px rgba(20,30,60,.06);border-left:5px solid var(--ai)}
+.st.k-visit{border-left-color:var(--kin)}
+.st.k-food{border-left-color:#C2303A}
+.st h3{font:700 19px var(--display);margin:0 0 4px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.st h3 .tm{font:600 13.5px var(--mono);color:var(--ai);background:var(--ai-soft);border-radius:999px;padding:1px 10px}
+.st p{margin:6px 0;line-height:1.7}
+.ph{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin:10px 0;padding-bottom:4px}
+.ph figure{flex:0 0 min(78%,420px);margin:0;scroll-snap-align:start}
+.ph img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block;max-width:100%}
+.ph figcaption{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.tr{background:var(--paper);border-radius:12px;padding:10px 14px;margin:10px 0}
+.tr dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:14px}
+.tr dt{color:var(--muted);white-space:nowrap}
+.tr dd{margin:0;min-width:0}
+.tr .ic{font-weight:700;color:var(--ai)}
+.tr .ic.no{color:#C2303A}
+.buy{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.65}
+.hl,.tp{margin:6px 0 0;padding-left:20px;line-height:1.65;font-size:14.5px}
+.tp{color:var(--muted)}
+.lnk{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.lnk a{font-size:13px;text-decoration:none;border:1px solid var(--line);padding:4px 12px;border-radius:999px;color:var(--ai);background:var(--surface)}
+.cost{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:24px 0 0}
+.cost>div{background:var(--surface);border-radius:16px;padding:14px 16px}
+.cost h3{font:700 17px var(--display);margin:0 0 8px}
+.cost table{width:100%;min-width:0!important;border-collapse:collapse;font-size:14px}
+.cost td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.cost td.n{text-align:right;font:600 13.5px var(--mono);white-space:nowrap;padding-left:10px}
+.cost tr.tot td{font-weight:700;border-bottom:0;padding-top:8px}
+.note{margin:20px 0 0;background:var(--kin-soft);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.7}
+.note ul{margin:4px 0 0;padding-left:20px}
+.src{font-size:12px;color:var(--muted);margin-top:16px;word-break:break-all}
+.src a{color:var(--muted)}
+</style>
+<script src="jds.js?v=7aabac8e"></script>
+</head>
+<body>
+<header class="site"><div class="wrap bar">
+  <a class="brand" href="gay-guide.html" aria-label="JD的旅遊規劃 首頁"><span class="logo"><img src="icon-sm.png" alt="JD"></span><span class="brand-t"><b>JD的旅遊規劃</b><small>Travel Notes 2026</small></span></a>
+  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html">美食介紹</a><a href="nearby.html">附近／地圖</a><a href="plan.html">行程規劃</a><a href="suggest.html" aria-current="page">行程建議</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
+</div></header>
+<section class="hero wrap">
+  <p class="eyebrow">Day Trips</p>
+  <h1>行程建議</h1>
+  <p class="lede">整理好的一日行程：每一段搭什麼車、在哪個月台、怎麼買票、大概幾點到，以及沿途照片。時間依平日和假日班次分開列，出發前可按「Yahoo!乗換案内」確認當天班次。</p>
+</section>
+<main class="wrap"><section class="trip" id="toyokawa-gamagori"><h2>豐川稻荷＋蒲郡竹島 一日遊（從名古屋出發）</h2><p class="sub">日本三大稻荷逢72年一次御開帳，下午漫步三河灣竹島</p><div class="facts"><span>建議日期：<b>2026-11-04（週三）：人潮較少，名鐵去程最划算；若想感受御開帳假日祭典氣氛（攤販、キッチンカー）或用青空フリーパス省錢，選 11/3（週二・文化之日）。</b></span><span>推薦走法交通費：<b>3,200 円</b></span><span>最省走法：<b>3,040 円</b></span></div><p class="summary-p">早上搭名鐵特急（平日）或 JR 新快速＋青空フリーパス（11/3 假日）到豐川，8:30 前後就能參拜豐川稻荷，剛好遇上 2026 年 11/1–11/23「72 年一次」的御開帳特別拜觀，中午在表參道吃豐川稻荷壽司。12:09 搭 JR 經豐橋到蒲郡（12:43），下午走竹島橋、拜八百富神社，可加竹島水族館，16:01 新快速回名古屋。新幹線最多只快 12 分鐘卻貴一倍，不建議。</p><div class="dsw" role="radiogroup" aria-label="選日期"><input type="radio" name="d-toyokawa-gamagori" id="d-toyokawa-gamagori-weekday" value="weekday" checked><label for="d-toyokawa-gamagori-weekday">平日（11/4 週三）</label><input type="radio" name="d-toyokawa-gamagori" id="d-toyokawa-gamagori-holiday" value="holiday"><label for="d-toyokawa-gamagori-holiday">假日（11/3 文化の日）</label></div><div class="tbl weekday"><table class="tl"><tbody><tr><td>07:08</td><td>離開飯店，步行 3 分到伏見站 1 號出口</td></tr><tr><td>07:18</td><td>東山線 伏見 → 名古屋（07:20 到）</td></tr><tr><td>07:20</td><td>地下通道步行到名鐵名古屋站（5–8 分）</td></tr><tr><td>07:32</td><td>名鐵 特急 豊橋行（一般車）→ 國府 08:17</td></tr><tr><td>08:25</td><td>國府轉 豐川線 豊川稲荷行 → 08:36 豐川稻荷站</td></tr><tr><td>08:42</td><td>走表參道到總門</td></tr><tr><td>08:45</td><td>豐川稻荷：山門・大本殿・千本幟・奧之院・靈狐塚（＋御開帳特別拜觀）</td></tr><tr><td>10:45</td><td>表參道吃豐川稻荷壽司／早午餐</td></tr><tr><td>11:55</td><td>步行到 JR 豐川站</td></tr><tr><td>12:09</td><td>JR 飯田線 → 豐橋 12:24；12:32 快速 大垣行 → 蒲郡 12:43</td></tr><tr><td>12:45</td><td>蒲郡站南口步行約 15 分到竹島</td></tr><tr><td>13:00</td><td>竹島橋・八百富神社・繞島步道</td></tr><tr><td>14:15</td><td>（選配）竹島水族館</td></tr><tr><td>15:20</td><td>步行回蒲郡站</td></tr><tr><td>16:01</td><td>JR 新快速 大垣行 → 16:43 名古屋（或 15:43 快速 → 16:28）</td></tr><tr><td>16:50</td><td>東山線回伏見，或在名古屋站吃晚餐</td></tr></tbody></table></div><div class="tbl holiday"><table class="tl"><tbody><tr><td>06:55</td><td>離開飯店（青空フリーパス請前一天先買好）</td></tr><tr><td>07:04</td><td>東山線 伏見 → 名古屋（07:06 到；06:57 那班更保險）</td></tr><tr><td>07:13</td><td>JR 新快速 豊橋行 → 豐橋 08:08</td></tr><tr><td>08:12</td><td>豐橋轉 JR 飯田線 天竜峡行（2 號月台）→ 08:24 豐川</td></tr><tr><td>08:30</td><td>豐川稻荷：趁早參拜，避開 10 點後的假日人潮</td></tr><tr><td>10:45</td><td>表參道吃稻荷壽司；11/3 境內另有攤販與キッチンカー</td></tr><tr><td>11:55</td><td>步行到 JR 豐川站</td></tr><tr><td>12:09</td><td>JR 飯田線 → 豐橋 12:24；12:32 快速 → 蒲郡 12:43</td></tr><tr><td>12:45</td><td>步行約 15 分到竹島</td></tr><tr><td>13:00</td><td>竹島橋・八百富神社・繞島步道</td></tr><tr><td>14:15</td><td>（選配）竹島水族館（假日人多）</td></tr><tr><td>15:20</td><td>步行回蒲郡站</td></tr><tr><td>16:01</td><td>JR 新快速 → 16:43 名古屋（青空フリーパス可搭）</td></tr><tr><td>16:50</td><td>東山線回伏見（地鐵另付 210 日圓）</td></tr></tbody></table></div><ol class="steps2"><li class="st k-move"><h3><span class="tm t-weekday">07:18–07:20</span><span class="tm t-holiday">07:04–07:06</span>伏見 → 名古屋（地下鐵東山線）</h3><p>從 Prince Smart Inn 名古屋栄 步行約 3 分鐘到伏見站 1 號出口，搭東山線往「高畑」方向 2 站到名古屋，約 2 分鐘。平日早上約 4 分鐘一班，假日約 6–7 分鐘一班。到名古屋站後：平日走地下通道到「名鉄名古屋」站（約 5–8 分鐘）；11/3 假日走到 JR 東海道線月台。</p><div class="tr"><dl><dt>路線</dt><dd>名古屋市營地下鐵 東山線</dd><dt>區間</dt><dd>伏見 → 名古屋</dd><dt>上車</dt><dd>伏見站 2 號月台（往 高畑 方向）</dd><dt>方向</dt><dd>高畑 方向</dd><dt>班次</dt><dd>平日 07:18 發（07:14、07:22 也可）／假日 07:04 發（06:57 更保險）</dd><dt>車程</dt><dd>約 2 分</dd><dt>票價</dt><dd>210 日圓（IC 與車票同價）</dd><dt>IC 卡</dt><dd class="ic">可直接刷 TOICA／ICOCA／Suica／manaca</dd></dl><ol class="buy"><li>有 IC 卡：直接在閘門感應即可；建議先儲值到 3,000 日圓以上（地鐵、名鐵、JR 都會用到）</li><li>沒有 IC 卡：售票機按「English」，買 210 日圓車票</li></ol></div><ul class="tp"><li>名古屋站地下很大：出東山線閘門後跟著「名鉄線 Meitetsu」或「JR線」指標走，不用上到地面。</li></ul><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;to=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=07&amp;m1=1&amp;m2=8" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 07:18）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;to=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=07&amp;m1=0&amp;m2=4" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 07:04）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29%E9%A7%85&destination=%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-move x-holiday"><h3><span class="tm t-weekday">07:32–08:36</span><span class="tm t-holiday" hidden>（假日推薦改搭 JR＋青空フリーパス，見下一段；若仍搭名鐵：急行 07:11 → 國府 08:08／08:12 → 豐川稻荷 08:24）</span>名鐵：名鉄名古屋 → 國府 → 豐川稻荷（平日推薦）</h3><div class="ph"><figure><img src="sgimg/toyokawa/07_meitetsu_toyokawainari_sta.jpg" alt="名鐵 豐川稻荷站" loading="lazy"><figcaption>名鐵 豐川稻荷站・ButuCC, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:MT-Toyokawa-inari_Station-Building_2022.jpg</figcaption></figure></div><p>這是 CP 值最高的去程：1,270 日圓，比新幹線便宜一半，下車就在豐川稻荷表參道旁。平日搭 07:32「特急 豊橋行」，坐「一般車」（免費自由座）即可，在國府（こう）站下車，同站轉「豊川線 豊川稲荷行」4 站到終點。國府轉車有 8 分鐘，走到 5 號月台即可。</p><div class="tr"><dl><dt>路線</dt><dd>名鐵名古屋本線 特急 → 國府轉 名鐵豐川線</dd><dt>區間</dt><dd>名鉄名古屋 → 豊川稲荷</dd><dt>上車</dt><dd>名鉄名古屋站（Yahoo 顯示 4 號線；同一月台依目的地分乘車位置，請找標示「豊橋」的乘車位置與一般車車廂）；國府站 5 號線轉豐川線</dd><dt>方向</dt><dd>豊橋 方向 → 國府轉 豊川稲荷 方向</dd><dt>班次</dt><dd>平日：特急 豊橋行 07:32 → 國府 08:17；豐川線 豊川稲荷行 08:25 → 08:36。下一班：特急 07:44 → 豐川稻荷 08:53</dd><dt>車程</dt><dd>約 56 分</dd><dt>票價</dt><dd>1,270 日圓（IC 與車票同價）</dd><dt>IC 卡</dt><dd class="ic">可直接刷 TOICA／ICOCA／Suica／manaca</dd></dl><ol class="buy"><li>有 IC 卡：直接刷卡進名鐵閘門，到豐川稻荷站刷卡出站，自動扣 1,270 日圓</li><li>買紙票：名鐵售票機選「English」→ 選 1,270 日圓（或在螢幕路線圖點「豊川稲荷」）</li><li>特急的「特別車（μ席，指定席）」要另買 ミューチケット，不需要；請上一般車（車門旁沒有「特別車」標示的車廂）</li></ol></div><ul class="hl"><li>不用買新幹線票，一張 IC 卡搞定</li><li>到站就在表參道旁</li></ul><ul class="tp"><li>名鐵名古屋站同一月台會停不同目的地的列車，上車前確認看板寫「豊橋」</li><li>在國府站一定要下車換「豊川稲荷」行，不要坐到豐橋</li></ul><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E9%89%84%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=07&amp;m1=3&amp;m2=2" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 07:32）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E9%89%84%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 （假日推薦改搭 JR＋青空フリーパス，見下一段；若仍搭名鐵：急行 07:11 → 國府 08:08／08:12 → 豐川稻荷 08:24））↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E5%90%8D%E9%89%84%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85&destination=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-move x-weekday"><h3><span class="tm t-weekday" hidden>—（平日不建議；平日同路線 07:18 新快速 → 豐川 08:41，IC 1,520 日圓）</span><span class="tm t-holiday">07:13–08:24</span>JR：名古屋 → 豐橋 → 豐川（11/3 假日推薦，用青空フリーパス）</h3><div class="ph"><figure><img src="sgimg/toyokawa/10_toyohashi_sta.jpg" alt="豐橋站（轉乘站）" loading="lazy"><figcaption>豐橋站（轉乘站）・EXECUTOR, CC0, https://commons.wikimedia.org/wiki/File:Toyohashi_Station_2.jpg</figcaption></figure><figure><img src="sgimg/toyokawa/09_iida_line_313.jpg" alt="飯田線 313系（豐川站）" loading="lazy"><figcaption>飯田線 313系（豐川站）・Toshinori baba, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:313_R112.JPG</figcaption></figure></div><p>11/3 是日本國定假日（文化之日），JR 東海的「青空フリーパス」（2,620 日圓）可在名古屋周邊 JR 普通／快速列車一日無限搭，涵蓋今天所有 JR 路段（名古屋→豐橋→豐川→豐橋→蒲郡→名古屋），比逐段刷 IC（3,030 日圓）省 410 日圓。搭 07:13 新快速到豐橋（08:08），同站轉 08:12 飯田線，08:24 到豐川，跟名鐵一樣早到。</p><div class="tr"><dl><dt>路線</dt><dd>JR 東海道本線 新快速 → 豐橋轉 JR 飯田線</dd><dt>區間</dt><dd>名古屋 → 豊川</dd><dt>上車</dt><dd>名古屋站 東海道線月台（豊橋方向，通常 2 或 3 號線，以電子看板為準）；豐橋站轉 2 號線飯田線</dd><dt>方向</dt><dd>豊橋 方向 → 飯田線 天竜峡行</dd><dt>班次</dt><dd>假日：新快速 豊橋行 07:13 → 豐橋 08:08；飯田線 天竜峡行 08:12 → 豐川 08:24（下一班 08:25 → 08:41）</dd><dt>車程</dt><dd>約 67 分</dd><dt>票價</dt><dd>持青空フリーパス 免費（一日券 2,620 日圓）；不用票則 IC 1,520 日圓</dd><dt>IC 卡</dt><dd class="ic no">可刷 TOICA 等 IC（1,520 日圓）；若用青空フリーパス，請把紙票插入閘門，不要刷 IC</dd></dl><ol class="buy"><li>建議前一天（11/2）在 JR 名古屋站的「指定席券売機」或 JR 售票處（きっぷうりば）先買好，乘車日選 11/3</li><li>機器操作：選「English」→ 找優惠票「Discount tickets／おトクなきっぷ」→「青空フリーパス Aozora Free Pass」→ 日期 11/3、大人 1 張 → 現金或信用卡</li><li>找不到選項就到 JR 售票處出示文字：「青空フリーパス 11月3日 大人1枚」</li><li>當天進出 JR 閘門都把紙票插入閘門並取回；飯田線豐橋–豐川、東海道線蒲郡都在範圍內</li><li>青空フリーパス不能搭新幹線、名鐵與地鐵；只限週六、週日、國定假日（11/4 週三不能用）</li></ol></div><ul class="hl"><li>假日最省：一張票搭整天 JR</li><li>豐橋站內轉乘，免出站</li></ul><ul class="tp"><li>豐橋轉車只有 4 分鐘：下車後跟「飯田線 Iida Line」指標到 2 號月台；沒趕上的話 08:25 還有一班（到豐川 08:41）</li></ul><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 —（平日不建議；平日同路線 07:18 新快速 → 豐川 08:41，IC 1,520 日圓））↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=07&amp;m1=1&amp;m2=3" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 07:13）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85&destination=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-move"><h3><span class="tm t-weekday">08:36–08:42</span><span class="tm t-holiday">08:24–08:30</span>車站 → 豐川稻荷 總門（步行約 5 分）</h3><div class="ph"><figure><img src="sgimg/toyokawa/08_jr_toyokawa_sta.jpg" alt="JR 豐川站" loading="lazy"><figcaption>JR 豐川站・Saigen Jiro, CC0, https://commons.wikimedia.org/wiki/File:Toyokawa_Station_(Aichi),_ekisha.jpg</figcaption></figure></div><p>名鐵豐川稻荷站和 JR 豐川站幾乎相鄰。出站後跟著「豊川稲荷」指標走進表參道商店街，官方標示步行約 5 分鐘到總門（正門）。早上 8 點多店家多半還沒開，先參拜、回程再逛表參道最順。</p><div class="tr"><dl><dt>路線</dt><dd>徒步</dd><dt>區間</dt><dd>名鐵 豊川稲荷站／JR 豊川站 → 豊川稲荷 総門</dd><dt>上車</dt><dd>出站後依「豊川稲荷」指標</dd><dt>方向</dt><dd>表參道方向</dd><dt>班次</dt><dd>—</dd><dt>車程</dt><dd>約 5 分</dd><dt>票價</dt><dd>免費</dd><dt>IC 卡</dt><dd class="ic no">不需要</dd></dl></div><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=08&amp;m1=3&amp;m2=6" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 08:36）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=08&amp;m1=2&amp;m2=4" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 08:24）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7%E9%A7%85&destination=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-visit"><h3><span class="tm t-weekday">08:45–10:45</span><span class="tm t-holiday">08:30–10:45</span>豐川稻荷（妙嚴寺）：山門・大本殿・奧之院・靈狐塚</h3><div class="ph"><figure><img src="sgimg/toyokawa/01_toyokawa_sanmon.jpg" alt="豐川稻荷 山門" loading="lazy"><figcaption>豐川稻荷 山門・Bariston, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Toyokawainari5.JPG</figcaption></figure><figure><img src="sgimg/toyokawa/02_toyokawa_honden.jpg" alt="豐川稻荷 大本殿" loading="lazy"><figcaption>豐川稻荷 大本殿・Bariston, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Toyokawainari_honden.jpg</figcaption></figure><figure><img src="sgimg/toyokawa/03_toyokawa_okunoin.jpg" alt="奧之院" loading="lazy"><figcaption>奧之院・Bariston, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Toyokawainari3.JPG</figcaption></figure><figure><img src="sgimg/toyokawa/04_reikozuka.jpg" alt="靈狐塚的狐狸石像群" loading="lazy"><figcaption>靈狐塚的狐狸石像群・Kuroshiononeko, CC0, https://commons.wikimedia.org/wiki/File:Toyokawa_Inari_Reikozuka_-_many_foxes.jpg</figcaption></figure></div><p>日本三大稻荷之一，正式名稱是曹洞宗「圓福山 妙嚴寺」，是寺院不是神社。境內參拜免費：總門 5:00–18:00 開門；大本殿、奧之院、萬堂 7:30–15:30 開扉。2026 年 11/1–11/23 正逢「72 年一次」的御開帳（秘佛御前立尊像特別公開），期間有「特別諸堂拜觀」（本殿 500 日圓起，8:00–16:00，只收現金、免預約），可進入平常只有祈禱者能進的本殿區域。建議路線：總門 → 山門 → 大本殿 → 千本幟參道 → 奧之院 → 靈狐塚 → 經萬燈堂、大黑堂回本殿，約 1.5–2 小時。</p><ul class="hl"><li>山門（1536 年今川義元寄進，境內最古老建築）約 5 分</li><li>大本殿（祀豐川吒枳尼眞天）參拜 15 分；御開帳期間本殿前有「御縁柱」與五色「善之綱」，觸摸可結緣</li><li>千本幟參道：紅白奉納旗一路延伸到奧之院，約 10 分</li><li>奧之院（1814 年建，由舊本殿拜殿移築）約 10 分</li><li>靈狐塚：1,000 尊以上信眾奉納的狐狸石像布滿山坡，最好拍，約 20 分</li><li>萬燈堂（禪堂）、大黑堂「撫摸大黑天」約 15 分</li><li>選配：御開帳特別諸堂拜觀（本殿 500 日圓；本殿＋法堂＋萬堂＋襖繪 套票 1,500 日圓）約 30–45 分</li></ul><ul class="tp"><li>11/3 國定假日正值御開帳：境內有約 30 家攤販、10:00 起キッチンカー、17:00 綱火奉納，人潮會很多，建議 9 點前進場</li><li>夜間點燈「ヨルモウデ」只在 11/1–3 與每週五六日 17:00–21:00，11/4（週三）沒有；本計畫中午就離開</li><li>特別諸堂拜觀只收現金；御朱印、御守授與時間 8:00–15:50</li><li>祈禱（5,000 日圓起）可參拜御前立尊像，本行程不含</li></ul><div class="lnk"><a href="sights.html#toyokawa">景點介紹</a><a href="route.html#toyokawa">地鐵怎麼去</a></div></li><li class="st k-food"><h3><span class="tm t-weekday">10:45–11:55</span><span class="tm t-holiday">10:45–11:55</span>表參道吃豐川稻荷壽司・早午餐</h3><div class="ph"><figure><img src="sgimg/toyokawa/05_omotesando.jpg" alt="豐川稻荷 表參道" loading="lazy"><figcaption>豐川稻荷 表參道・Bariston, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Toyokawainari6.JPG</figcaption></figure><figure><img src="sgimg/toyokawa/06_toyokawa_inarizushi.jpg" alt="豐川稻荷壽司（示意）" loading="lazy"><figcaption>豐川稻荷壽司（示意）・Lombroso, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Toyokawa_inari-zushi_(2010.11.07).jpg</figcaption></figure></div><p>豐川稻荷門前的表參道（門前町）有上百家店，名物是「豐川いなり寿司」，從傳統五目稻荷到加味噌豬排、山葵葉、鰻魚的創作口味都有，一顆約 170–300 日圓，可邊走邊吃。10:45 時多數外帶店已開，內用餐廳多從 10:00–11:00 開始。</p><ul class="hl"><li>門前そば 山彦：約 100 年老店，「いなほ稲荷寿司」7 個 900 日圓、稲荷門前きしめん；外帶 8:30–17:00、內用約 10:00–16:00；週四公休（遇 1 日、假日、大祭照常）→ 11/3、11/4 都有開</li><li>和食処 松屋（三河の逸膳 松屋）：總門前三代老店，創作いなり；外帶約 10:00–17:00、內用 11:00–14:30；週一與第 3 個週二休（遇假日營業）→ 11/3、11/4 都有開</li><li>おきつね本舗：炙烤油豆腐皮夾豬排的「おきつねバーガー」350 日圓、味噌カツいなり；10:00–17:00；週二、週三公休（遇假日營業）→ 11/3 有開、11/4（週三）可能公休</li><li>千石寿し：稍遠（名鐵站步行 5 分），親子いなり、鰻いなり；11:30–14:00</li></ul><ul class="tp"><li>店家營業時間來自 2024–2025 年旅遊網站資料，御開帳期間可能延長或變動，以現場為準</li><li>想帶回去當點心：稻荷壽司常溫可放幾小時，當天傍晚前吃完較安全</li></ul></li><li class="st k-move"><h3><span class="tm t-weekday">12:09–12:43</span><span class="tm t-holiday">12:09–12:43</span>JR 豐川 → 豐橋 → 蒲郡</h3><p>從表參道走回 JR 豐川站（約 5 分），搭飯田線到終點豐橋，站內轉東海道線「快速 大垣行」（往名古屋方向）2 站到蒲郡。豐橋轉車 8 分鐘，不用出站。原稿寫 12:00 出發、約 13:00 到蒲郡；實際 12:09 的車 12:43 就到，竹島可多玩約 17 分鐘。</p><div class="tr"><dl><dt>路線</dt><dd>JR 飯田線 → 豐橋轉 JR 東海道本線 快速</dd><dt>區間</dt><dd>豊川 → 蒲郡</dd><dt>上車</dt><dd>豐川站 2・3 號線（豐橋行）；豐橋站 1 號線到達 → 6 號線「快速 大垣行」</dd><dt>方向</dt><dd>豊橋 方向 → 東海道線 名古屋・大垣 方向</dd><dt>班次</dt><dd>飯田線 12:09 → 豐橋 12:24；快速 大垣行 12:32 → 蒲郡 12:43。下一班：12:39 → 豐橋 12:54／13:02 快速（7 號線）→ 蒲郡 13:15</dd><dt>車程</dt><dd>約 26 分</dd><dt>票價</dt><dd>510 日圓（IC 與車票同價）；持青空フリーパス免費</dd><dt>IC 卡</dt><dd class="ic no">可直接刷 TOICA／ICOCA／Suica／manaca（豐川在 TOICA 區域內；豐橋站內轉乘不出站，到蒲郡刷卡出站一次扣款）</dd></dl><ol class="buy"><li>有 IC 卡：JR 豐川站直接刷卡進站，到蒲郡刷卡出站</li><li>無 IC 卡：在豐川站售票機買到「蒲郡」510 日圓的票</li><li>持青空フリーパス：插票進出閘門</li></ol></div><ul class="tp"><li>名鐵豐川稻荷站沒有車到蒲郡，請走到隔壁的 JR 豐川站</li></ul><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;to=%E8%92%B2%E9%83%A1&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=12&amp;m1=0&amp;m2=9" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 12:09）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;to=%E8%92%B2%E9%83%A1&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=12&amp;m1=0&amp;m2=9" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 12:09）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29%E9%A7%85&destination=%E8%92%B2%E9%83%A1%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-move"><h3><span class="tm t-weekday">12:45–13:00</span><span class="tm t-holiday">12:45–13:00</span>蒲郡站南口 → 竹島（步行約 15 分）</h3><div class="ph"><figure><img src="sgimg/toyokawa/11_gamagori_sta.jpg" alt="JR 蒲郡站" loading="lazy"><figcaption>JR 蒲郡站・Lombroso, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Gamagori_Station_(2018-05-19)_02.jpg</figcaption></figure></div><p>從 JR 蒲郡站「南口」出站往海邊走，官方標示步行約 15 分鐘到竹島橋頭（竹島園地）。也有名鐵巴士「西浦病院循環バス（左まわり）」從南口 2 號站牌到「竹島遊園」，但班次不多，步行最實際。蒲郡站內「ナビテラス」可租電動輔助自行車（1 次 1,000 日圓）。</p><div class="tr"><dl><dt>路線</dt><dd>徒步（或 名鐵巴士 西浦病院循環 左回り）</dd><dt>區間</dt><dd>蒲郡站 南口 → 竹島園地（竹島橋頭）</dd><dt>上車</dt><dd>南口出站（巴士為南口 2 號站牌）</dd><dt>方向</dt><dd>往南（海邊）</dd><dt>班次</dt><dd>—</dd><dt>車程</dt><dd>約 15 分</dd><dt>票價</dt><dd>步行免費</dd><dt>IC 卡</dt><dd class="ic no">步行不需要（巴士能否刷 IC 未查證）</dd></dl></div><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%E7%AB%B9%E5%B3%B6%E9%81%8A%E5%9C%92&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=12&amp;m1=4&amp;m2=5" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 12:45）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%E7%AB%B9%E5%B3%B6%E9%81%8A%E5%9C%92&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=12&amp;m1=4&amp;m2=5" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 12:45）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E8%92%B2%E9%83%A1%E9%A7%85&destination=%E7%AB%B9%E5%B3%B6%E9%81%8A%E5%9C%92%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-visit"><h3><span class="tm t-weekday">13:00–14:15</span><span class="tm t-holiday">13:00–14:15</span>竹島：竹島橋・八百富神社・繞島步道</h3><div class="ph"><figure><img src="sgimg/toyokawa/12_takeshima_bridge.jpg" alt="竹島與竹島橋" loading="lazy"><figcaption>竹島與竹島橋・Alpsdake, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Take_Island_and_Bridge.jpg</figcaption></figure><figure><img src="sgimg/toyokawa/13_yaotomi_haiden.jpg" alt="八百富神社 拜殿" loading="lazy"><figcaption>八百富神社 拜殿・Yanajin33, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Le_Temple_Shintô_Yaotomi-jinja_-_Le_haiden_(La_construction_du_culte).jpg</figcaption></figure></div><p>竹島是三河灣上的小島，以長 387 公尺的竹島橋與陸地相連，整座島是國家天然紀念物（植物相與對岸不同）。島中央的八百富神社與江之島、竹生島、嚴島並列「日本七弁天」，以開運、安產、結緣聞名，參拜免費、全天開放（社務所約 9:00–17:00）。參拜後從島的另一側下去，沿西側遊步道走半圈回橋頭；若連東側天然岩岸也走，約 20–30 分鐘可繞島一周。</p><ul class="hl"><li>竹島橋：387 m，單程約 5–6 分鐘，橋上可回看蒲郡海岸與三河灣</li><li>八百富神社：日本七弁天之一；境內另有宇賀神社、大黑神社、千歲神社、八大龍神社，可四社巡拜</li><li>竹島八景（常磐之磯、竜神岬、焙烙岩等）與白蛇傳說的「蛇穴」</li><li>繞島一周約 20–30 分</li></ul><ul class="tp"><li>東側是天然岩岸，沒有欄杆且濕滑，漲潮時部分岩場可能過不去；穿好走的鞋，不要勉強</li><li>11 月上旬蒲郡日落約 16:50；想看夕陽可改搭 17 點後的車回名古屋（見替代方案）</li><li>入夜後竹島橋會點燈</li></ul></li><li class="st k-visit"><h3><span class="tm t-weekday">14:15–15:20</span><span class="tm t-holiday">14:15–15:20</span>（選配）竹島水族館</h3><div class="ph"><figure><img src="sgimg/toyokawa/14_takeshima_aquarium.jpg" alt="竹島水族館" loading="lazy"><figcaption>竹島水族館・Evelyn-rose, CC0, https://commons.wikimedia.org/wiki/File:Takeshima-Aquarium-1.jpg</figcaption></figure></div><p>就在竹島橋頭旁，是小而有名的水族館：以約 100 種深海生物、可以摸螃蟹和鯊魚的「さわりんプール」、手寫幽默解說卡和海獅秀聞名。9:00–17:00（16:30 前入館），全年無休（僅 6 月設備維修休館），大人 1,200 日圓。不進館的話，可在竹島園地海邊散步休息。</p><ul class="hl"><li>深海生物展示（高腳蟹等）</li><li>さわりんプール 觸摸池</li><li>海獅秀／水豚秀（場次以現場公告為準）</li></ul><ul class="tp"><li>11/3 假日親子客多，入館可能要排隊</li><li>票價依愛知縣官方觀光網站 Aichi Now（大人 1,200 日圓），以現場為準</li></ul></li><li class="st k-move"><h3><span class="tm t-weekday">16:01–16:43</span><span class="tm t-holiday">16:01–16:43</span>蒲郡 → 名古屋（JR 新快速）</h3><p>15:20 左右從竹島往回走，15:40 前到蒲郡站。搭 16:01「新快速 大垣行」直達名古屋，42 分鐘、1,000 日圓。想早點回去可搭 15:43 快速（16:28 到）；想多待一下則 16:15（16:58 到）。</p><div class="tr"><dl><dt>路線</dt><dd>JR 東海道本線 新快速</dd><dt>區間</dt><dd>蒲郡 → 名古屋</dd><dt>上車</dt><dd>蒲郡站 3 號月台（名古屋・岐阜方向）</dd><dt>方向</dt><dd>名古屋・大垣 方向</dd><dt>班次</dt><dd>新快速 大垣行 16:01 → 名古屋 16:43（前一班 快速 15:43 → 16:28；後一班 16:15 → 16:58）</dd><dt>車程</dt><dd>約 42 分</dd><dt>票價</dt><dd>1,000 日圓（IC 與車票同價）；持青空フリーパス免費</dd><dt>IC 卡</dt><dd class="ic">可直接刷 TOICA／ICOCA／Suica／manaca</dd></dl><ol class="buy"><li>有 IC 卡：直接刷卡進站</li><li>無 IC 卡：售票機選「English」買到「名古屋」1,000 日圓</li><li>持青空フリーパス：插票進出閘門</li></ol></div><ul class="tp"><li>往名古屋是 3 號月台；新快速、快速都可以搭，普通車會慢很多</li></ul><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=16&amp;m1=0&amp;m2=1" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 16:01）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=16&amp;m1=0&amp;m2=1" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 16:01）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E8%92%B2%E9%83%A1%E9%A7%85&destination=%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li><li class="st k-move"><h3><span class="tm t-weekday">16:50–16:55</span><span class="tm t-holiday">16:50–16:55</span>名古屋 → 伏見（回飯店）</h3><p>在名古屋站轉東山線往「藤が丘」方向 2 站回伏見，1 號出口步行 3 分鐘到飯店。也可以先在名古屋站周邊吃晚餐再回去。</p><div class="tr"><dl><dt>路線</dt><dd>名古屋市營地下鐵 東山線</dd><dt>區間</dt><dd>名古屋 → 伏見</dd><dt>上車</dt><dd>名古屋站 東山線 往 藤が丘 方向月台</dd><dt>方向</dt><dd>藤が丘 方向</dd><dt>班次</dt><dd>約 3–6 分一班</dd><dt>車程</dt><dd>約 2 分</dd><dt>票價</dt><dd>210 日圓（IC 與車票同價）</dd><dt>IC 卡</dt><dd class="ic">可直接刷 TOICA／ICOCA／Suica／manaca</dd></dl></div><div class="lnk"><a class="t-weekday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=04&amp;hh=16&amp;m1=5&amp;m2=0" target="_blank" rel="noopener">Yahoo!乗換案内（11/4 16:50）↗</a><a class="t-holiday" href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;ws=3&amp;s=0&amp;al=0&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=0&amp;y=2026&amp;m=11&amp;d=03&amp;hh=16&amp;m1=5&amp;m2=0" target="_blank" rel="noopener">Yahoo!乗換案内（11/3 16:50）↗</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=%E5%90%8D%E5%8F%A4%E5%B1%8B%E9%A7%85&destination=%E4%BC%8F%E8%A6%8B%28%E6%84%9B%E7%9F%A5%E7%9C%8C%29%E9%A7%85" target="_blank" rel="noopener">Google 地圖 ↗</a></div></li></ol><div class="cost"><div><h3>推薦走法的交通費（成人單程合計）</h3><table><tr><td>地鐵 伏見 → 名古屋<br><small class=muted>IC 同價</small></td><td class="n">210 円</td></tr><tr><td>名鐵 名鉄名古屋 → 豊川稲荷（特急一般車，國府轉車）<br><small class=muted>IC 同價；特別車不需要</small></td><td class="n">1,270 円</td></tr><tr><td>JR 豊川 → 豊橋 → 蒲郡<br><small class=muted>IC 同價</small></td><td class="n">510 円</td></tr><tr><td>JR 蒲郡 → 名古屋（新快速）<br><small class=muted>IC 同價</small></td><td class="n">1,000 円</td></tr><tr><td>地鐵 名古屋 → 伏見<br><small class=muted>IC 同價</small></td><td class="n">210 円</td></tr><tr class="tot"><td>合計</td><td class="n">3,200 円</td></tr></table></div><div><h3>最省錢走法</h3><table><tr><td>地鐵 伏見 → 名古屋<br><small class=muted>11/3 假日</small></td><td class="n">210 円</td></tr><tr><td>JR 青空フリーパス（大人，當日 JR 普通／快速無限搭）<br><small class=muted>只限週六日、國定假日；11/3 可用，11/4 不能用。逐段刷 IC 要 3,030 日圓</small></td><td class="n">2,620 円</td></tr><tr><td>地鐵 名古屋 → 伏見<br><small class=muted>IC 同價</small></td><td class="n">210 円</td></tr><tr class="tot"><td>合計</td><td class="n">3,040 円</td></tr></table></div></div><div class="note"><b>其他走法</b><ul><li>新幹線（原稿方案）：こだま 802 號 名古屋 07:38 發（15 號月台，名古屋始發）→ 豐橋 08:05 → 飯田線 08:12（2 號月台）→ 豐川 08:24。在 JR 名古屋站售票機買「乘車券 名古屋→豊川 1,520 日圓＋新幹線自由席特急券 名古屋→豊橋 990 日圓」＝2,510 日圓（新幹線不能直接刷 IC，除非事先註冊 smartEX 並綁 IC 卡）。自由席多為 1–6 號車（部分班次 13–16 號車也是），以月台標示為準。平日只比名鐵早到 12 分鐘、假日與 JR 新快速同時到，價格約兩倍，不推薦。</li><li>平日想全程用 JR：06:58 新快速 → 豐橋約 07:56 → 飯田線 08:03；或 07:18 新快速 → 豐橋 08:14 → 08:25 飯田線 → 豐川 08:41。名古屋→豐川 IC 1,520 日圓，比名鐵貴 250 日圓。</li><li>11/3 假日不想買青空フリーパス：06:57 地鐵 → 名鐵 07:11 急行 豊橋行（全車免費座位，直達國府）→ 國府 08:08 → 08:12 豐川線 → 豐川稻荷 08:24，1,270 日圓，全天 3,200 日圓。</li><li>想在竹島看夕陽（約 16:50）：在竹島待到 17:00 再走回蒲郡站，搭 17 點後的新快速／快速回名古屋（約每 15 分一班，約 45 分鐘）。</li><li>時間不夠時：取消竹島水族館，逛完竹島後提早一小時回名古屋。</li><li>11/3 晚上加碼：豐川稻荷 17:00 綱火奉納與 17:00–21:00「ヨルモウデ」點燈（需另排動線，本計畫未納入）。</li></ul></div><div class="note"><b>要留意</b><ul><li>電車時刻與月台取自 Yahoo!路線情報（JR 時刻表 2026 年 10 月版、私鐵 2026 年 9 月版），出發前一天請再查一次。</li><li>名鐵名古屋站月台號碼（Yahoo 顯示 4 號線）未經現場確認；同一月台依目的地分乘車位置，以看板為準。</li><li>假日 07:13 新快速在名古屋的月台號碼未查到（平日 07:30 班為 2 號線、假日 07:28 班為 3 號線）。</li><li>こだま自由席車廂（1–6 號車／13–16 號車）來自第三方網站，可能因班次不同。</li><li>名鐵特急「特別車」需另購 ミューチケット，金額未查證；本計畫只坐免費的一般車。</li><li>青空フリーパス 2,620 日圓與使用條件取自 JR 東海官網（2026-10-05 查閱）；售票機英文選單的實際名稱未確認。</li><li>TOICA 涵蓋 JR 飯田線 豐橋–豐川（豐川為 TOICA 區域邊界站）係依 TOICA 官網地圖與第三方說明，未逐字確認；Yahoo 對該段有顯示 IC 票價。</li><li>表參道店家營業時間取自 2024–2025 年 Mapple、rurubu 等旅遊網站，御開帳期間可能變動；おきつね本舗 11/4（週三）可能公休。</li><li>竹島水族館票價 1,200 日圓取自愛知縣官方觀光網 Aichi Now；照片為 2019 年攝，外觀可能已有變化。</li><li>竹島東側岩岸受潮汐影響，是否能完整繞島視當天潮位而定（未查當日潮汐）。</li><li>日落約 16:50 為估計值。</li><li>11/3 豐川稻荷御開帳活動（攤販 30 家、キッチンカー、綱火、夜間點燈）依豐川稻荷官網 2026-09-27 公告，部分標示「開催予定」。</li><li>11/3、11/4 未查到豐川稻荷或竹島的封閉、休館資訊；本殿特別拜觀只在 11/21–22 13:00–15:00 因大祭暫停。</li></ul></div><div class="src">來源：<a href="https://www.toyokawainari.jp/" target=_blank rel=noopener>https://www.toyokawainari.jp/</a> <a href="https://www.toyokawainari.jp/news/%e4%bb%a4%e5%92%8c%ef%bc%98%e5%b9%b4-%e4%b8%83%e5%8d%81%e4%ba%8c%e5%b9%b4%e3%81%b6%e3%82%8a%e3%81%ae%e5%be%a1%e9%96%8b%e5%b8%b3%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6/" target=_blank rel=noopener>https://www.toyokawainari.jp/news/%e4%bb%a4%e5%92%8c%ef%bc%98%e5%b9%b4</a> <a href="https://www.toyokawainari.jp/news/%e5%be%a1%e9%96%8b%e5%b8%b3%e6%ba%96%e5%82%99%e3%81%ab%e4%bc%b4%e3%81%86%e4%bc%91%e6%ad%a2%e3%81%ae%e3%81%8a%e7%9f%a5%e3%82%89%e3%81%9b/" target=_blank rel=noopener>https://www.toyokawainari.jp/news/%e5%be%a1%e9%96%8b%e5%b8%b3%e6%ba%96</a> <a href="https://www.toyokawainari.jp/about/faq/" target=_blank rel=noopener>https://www.toyokawainari.jp/about/faq/</a> <a href="https://www.toyokawainari.jp/worship/grounds/" target=_blank rel=noopener>https://www.toyokawainari.jp/worship/grounds/</a> <a href="https://www.toyokawainari.jp/event/year/" target=_blank rel=noopener>https://www.toyokawainari.jp/event/year/</a> <a href="https://aichinow.pref.aichi.jp/spots/detail/44/" target=_blank rel=noopener>https://aichinow.pref.aichi.jp/spots/detail/44/</a> <a href="https://aichinow.pref.aichi.jp/spots/detail/47/" target=_blank rel=noopener>https://aichinow.pref.aichi.jp/spots/detail/47/</a> <a href="https://www.gamagori.jp/special/takeshima" target=_blank rel=noopener>https://www.gamagori.jp/special/takeshima</a> <a href="https://www.gltjp.com/ja/directory/item/19269/" target=_blank rel=noopener>https://www.gltjp.com/ja/directory/item/19269/</a> <a href="https://www.mapple.net/original/521046/" target=_blank rel=noopener>https://www.mapple.net/original/521046/</a> <a href="https://rurubu.jp/andmore/spot/80007727" target=_blank rel=noopener>https://rurubu.jp/andmore/spot/80007727</a> <a href="https://railway.jr-central.co.jp/tickets/aozora-free-holiday/index.html" target=_blank rel=noopener>https://railway.jr-central.co.jp/tickets/aozora-free-holiday/index.htm</a> <a href="https://travel.watch.impress.co.jp/docs/news/2034281.html" target=_blank rel=noopener>https://travel.watch.impress.co.jp/docs/news/2034281.html</a> <a href="https://toica.jr-central.co.jp/area/" target=_blank rel=noopener>https://toica.jr-central.co.jp/area/</a> <a href="https://shinkansenkenkyu.com/non-reserved-kodama-tokaido/" target=_blank rel=noopener>https://shinkansenkenkyu.com/non-reserved-kodama-tokaido/</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E9%89%84%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%E7%A8%B2%E8%8D%B7&amp;y=2026&amp;m=11&amp;d=04&amp;hh=07&amp;m1=0&amp;m2=5&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=0&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E9%89%84%E5%9</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E6%A9%8B&amp;y=2026&amp;m=11&amp;d=04&amp;hh=07&amp;m1=2&amp;m2=5&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=1&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E6%A9%8B&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%29&amp;y=2026&amp;m=11&amp;d=04&amp;hh=08&amp;m1=0&amp;m2=5&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=0&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E6%A9%8B&amp;to=%</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%29&amp;to=%E8%92%B2%E9%83%A1&amp;y=2026&amp;m=11&amp;d=04&amp;hh=11&amp;m1=5&amp;m2=0&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=0&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E8%B1%8A%E5%B7%9D%28%E</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;y=2026&amp;m=11&amp;d=04&amp;hh=15&amp;m1=4&amp;m2=0&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=0&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E8%92%B2%E9%83%A1&amp;to=%</a> <a href="https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B1%8B&amp;to=%E8%B1%8A%E5%B7%9D%28%E6%84%9B%E7%9F%A5%29&amp;y=2026&amp;m=11&amp;d=03&amp;hh=07&amp;m1=0&amp;m2=0&amp;type=1&amp;ticket=ic&amp;expkind=1&amp;userpass=1&amp;ws=3&amp;s=0&amp;al=1&amp;shin=0&amp;ex=1&amp;hb=1&amp;lb=1&amp;sr=1" target=_blank rel=noopener>https://transit.yahoo.co.jp/search/result?from=%E5%90%8D%E5%8F%A4%E5%B</a> <a href="https://transit.yahoo.co.jp/timetable/25077/1370/2025?kind=4&amp;hh=7&amp;mm=13" target=_blank rel=noopener>https://transit.yahoo.co.jp/timetable/25077/1370/2025?kind=4&amp;hh=7&amp;mm=1</a> <a href="https://transit.yahoo.co.jp/timetable/25063/1311?kind=4" target=_blank rel=noopener>https://transit.yahoo.co.jp/timetable/25063/1311?kind=4</a> <a href="https://transit.yahoo.co.jp/timetable/25137/5370?kind=4" target=_blank rel=noopener>https://transit.yahoo.co.jp/timetable/25137/5370?kind=4</a></div></section></main>
+<footer class="wrap"><p>照片取自 Wikimedia Commons，作者與授權標在每張圖下方。班次、票價以各公司官網與當天查詢為準。</p></footer>
+</body>
+</html>
