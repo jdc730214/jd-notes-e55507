@@ -254,3 +254,21 @@ function init(){
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
+
+/* ---------- 回到最上面：往下捲超過一個畫面就出現在右下角 ---------- */
+(function(){
+function init(){
+  const st = document.createElement('style');
+  st.textContent = `.totop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:49;width:46px;height:46px;border-radius:50%;border:0;background:var(--surface,#fff);color:var(--ai,#2747C8);box-shadow:0 6px 18px rgba(20,30,60,.22);font:700 20px/1 var(--body,system-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.95}
+.totop[hidden]{display:none!important}.totop:focus-visible{outline:2px solid var(--ai,#2747C8);outline-offset:2px}`;
+  document.head.appendChild(st);
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'totop'; b.hidden = true;
+  b.setAttribute('aria-label', '回到最上面'); b.title = '回到最上面'; b.textContent = '↑';
+  document.body.appendChild(b);
+  const place = () => { const f = document.querySelector('.basketfab'); b.style.bottom = f && f.offsetParent ? `calc(${f.offsetHeight + 28}px + env(safe-area-inset-bottom,0px))` : ''; };
+  const upd = () => { b.hidden = scrollY < innerHeight * 0.9; if (!b.hidden) place(); };
+  addEventListener('scroll', upd, {passive: true}); addEventListener('resize', upd); upd();
+  b.addEventListener('click', () => { scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
