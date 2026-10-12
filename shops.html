@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>想逛商家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:ital,wght@1,600&family=Inter:wght@600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 暖簾標頭 → 黏性目錄 chips → 每種票一個段落（說明、編號步驟配圖、票券表、提醒） */
+:root{
+  --paper:#EEF0F4; --surface:#FFFFFF; --ink:#191C2B; --muted:#5A6075; --line:#D6DAE4;
+  --ai:#27358A; --ai-soft:#E3E6F5; --kin:#A9780F; --kin-soft:#F6EBCF; --warn:#9A3B1F;
+  --display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:64px}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--body)}
+a{color:var(--ai)}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px}
+header.top{padding-block:24px 0;border-bottom:1px solid var(--line);background:var(--surface)}
+.noren{display:flex;gap:6px;margin-bottom:12px}
+.noren span{width:34px;height:10px;background:var(--ai);border-radius:0 0 3px 3px}
+.noren span:nth-child(2n){opacity:.75}
+h1{font:900 clamp(26px,4.4vw,38px)/1.2 var(--display);margin:0;letter-spacing:.02em}
+.lede{color:var(--muted);margin:6px 0 0;max-width:64ch}
+.tabs{display:flex;gap:4px;margin-top:16px;flex-wrap:wrap}
+.tabs a{padding:8px 16px;text-decoration:none;color:var(--muted);border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;font-weight:500}
+.tabs a[aria-current="page"]{color:var(--ink);background:var(--paper);border-color:var(--line);margin-bottom:-1px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+nav.toc a{flex:none;font-size:13px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+nav.toc a:hover{border-color:var(--ai);color:var(--ai)}
+main{padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+.quick{background:var(--kin-soft);border:1px solid var(--kin);border-radius:12px;padding:14px 16px}
+.quick h2{font:600 17px var(--display);margin:0 0 6px;color:var(--kin)}
+.quick ul{margin:0;padding-left:1.2em}
+section.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 16px;min-width:0}
+section.sec>h2{font:900 24px/1.3 var(--display);margin:0 0 6px}
+.intro{margin:0 0 12px;max-width:70ch}
+ol.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:start}
+ol.steps>li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--ai);color:var(--surface);font:600 14px/28px var(--mono);text-align:center}
+.stx{min-width:0}
+.stx figure{margin:8px 0 0;max-width:460px}
+.stx img{border-radius:8px;width:100%}
+figcaption{font-size:12px;color:var(--muted);margin-top:4px;word-break:break-word}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;margin:0 0 14px}
+.gallery figure{margin:0;min-width:0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}
+.tkwrap{overflow-x:auto;margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th{text-align:left;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 8px}
+td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top}
+td.pr{font:600 13.5px var(--mono);white-space:nowrap}
+.tips{margin:0 0 8px;padding:10px 14px 10px 30px;background:var(--paper);border-radius:8px;font-size:14px}
+.src{font-size:12px;color:var(--muted);word-break:break-all}
+.src a{color:var(--muted)}
+.h3{font:600 15px var(--display);margin:14px 0 6px;color:var(--ai)}
+footer{font-size:12.5px;color:var(--muted);padding-block:0 40px}
+
+/* ===== 共用版型：旅遊雜誌風（白底大照片、宋體標題、圓角柔影卡片；鈷藍取自 icon 帽子＋暖橘點綴） ===== */
+:root{
+  --paper:#F5F6F8; --surface:#FFFFFF; --ink:#1E2026; --muted:#676B75; --line:#E4E6EB;
+  --ai:#2747C8; --ai-soft:#EEF1FB; --kin:#D9692E; --kin-soft:#FCEEE4; --warn:#B23A2A;
+  --display:"Chiron Sung HK","Noto Serif TC","PMingLiU",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --latin:"Playfair Display",Georgia,serif;
+  --kick:"Inter","Noto Sans TC",sans-serif;
+  --shadow:0 2px 4px rgba(20,25,40,.04),0 10px 30px rgba(20,25,40,.08);
+  --shadow-sm:0 1px 2px rgba(20,25,40,.04),0 4px 14px rgba(20,25,40,.06);
+  --navh:90px;
+  color-scheme:light;
+}
+@media (max-width:720px){ :root{ --navh:118px } }
+html{scroll-padding-top:calc(var(--navh) + 70px)}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;letter-spacing:.01em}
+a{color:var(--ai);text-underline-offset:3px}
+
+/* ---- 固定導覽列 ---- */
+header.site{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line),0 8px 24px rgba(20,25,40,.05)}
+header.site .bar{display:flex;align-items:center;gap:24px;min-height:var(--navh);padding-block:12px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);flex:none;min-width:0}
+.logo{position:relative;width:60px;height:60px;flex:none}
+.logo img{position:relative;z-index:1;width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 6px 18px rgba(39,71,200,.28);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.logo::after{content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);background-size:260% 100%;background-position:160% 0;animation:logo-shine 7s ease-in-out infinite}
+.brand:hover .logo img,.brand:focus-visible .logo img{transform:rotate(-8deg) scale(1.07)}
+@keyframes logo-shine{0%,72%{background-position:160% 0}100%{background-position:-60% 0}}
+.brand-t{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.brand-t b{font:900 24px/1.15 var(--display);letter-spacing:.05em;white-space:nowrap}
+.brand-t small{font:italic 600 13.5px/1.3 var(--latin);color:var(--kin);letter-spacing:.06em;white-space:nowrap;margin-top:3px}
+nav.sitetabs{display:flex;gap:24px;margin-left:auto;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav.sitetabs::-webkit-scrollbar{display:none}
+nav.sitetabs a{position:relative;flex:none;padding:10px 0;font:500 15.5px var(--body);color:var(--muted);text-decoration:none;letter-spacing:.04em;transition:color .2s}
+nav.sitetabs a:hover{color:var(--ink)}
+nav.sitetabs a[aria-current="page"]{color:var(--ink);font-weight:700}
+nav.sitetabs a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:3px;border-radius:3px;background:var(--kin)}
+@media (max-width:720px){
+  header.site .bar{flex-wrap:wrap;gap:6px 12px;padding-block:10px 0}
+  nav.sitetabs{order:2;width:calc(100% + 32px);margin:0 -16px;padding-inline:16px;gap:20px;border-top:1px solid var(--line)}
+  nav.sitetabs a{padding:10px 0 9px;font-size:15px}
+  .logo,.logo img{width:46px;height:46px}
+  .brand-t b{font-size:20px}
+  .brand-t small{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){ .logo::after{animation:none} .logo img{transition:none} }
+
+/* ---- 頁首（雜誌扉頁） ---- */
+.hero{padding-block:46px 26px}
+.hero .eyebrow{font:700 12.5px var(--kick);letter-spacing:.3em;text-transform:uppercase;color:var(--kin);margin:0 0 6px}
+.hero h1{font:900 clamp(32px,6vw,52px)/1.12 var(--display);letter-spacing:.03em;margin:0;text-wrap:balance}
+.hero .lede{max-width:58ch;color:var(--muted);margin:12px 0 0;font-size:16px}
+.hero .meta{margin-top:14px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 18px}
+.hero .meta b{color:var(--ink);font-weight:500}
+header.top,.noren{display:none!important}
+
+/* ---- 篩選列接在導覽列下方 ---- */
+.filters,nav.toc{top:var(--navh)!important;background:rgba(245,246,248,.95)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)!important}
+
+/* ---- 卡片與面板：圓角、柔和陰影、無框線 ---- */
+.card,.panel,section.sec,.dish,.route,.quick,details.leg{border:0!important;border-radius:16px!important;box-shadow:var(--shadow)!important;background:var(--surface)}
+.route,.quick,details.leg{box-shadow:var(--shadow-sm)!important}
+.card{overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+@media (hover:hover){ .card:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(20,25,40,.05),0 18px 40px rgba(20,25,40,.12)!important} }
+.card.top{box-shadow:0 0 0 2px var(--kin),var(--shadow)!important}
+.ph,.car,.noph{border-radius:0!important}
+.info img,.stx img,.gallery img,.dish img{border-radius:12px!important}
+.dish img{border-radius:0!important}
+.mylist li,.tips,.sig,.tk{border-radius:10px!important}
+
+/* ---- 按鈕、標籤：膠囊 ---- */
+.chip,.seg,.btn,.links a,.search,.tag,.rv,.lv,.conf,.linepill,.badge{border-radius:999px!important}
+select,input{border-radius:10px!important}
+.chip{border:1px solid var(--line)!important;background:var(--surface);color:var(--ink);font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ai)!important;border-color:var(--ai)!important;color:#fff!important}
+.seg{border:1px solid var(--line)!important;background:var(--surface)!important;overflow:hidden}
+.seg button[aria-pressed="true"]{background:var(--ai)!important;color:#fff!important}
+.btn.primary,.links a.go{background:var(--ai)!important;border-color:var(--ai)!important;color:#fff!important}
+.links a{border-color:var(--line)!important}
+.tag{background:var(--ai-soft)!important;color:var(--ai)!important;border:0!important;padding:2px 10px!important}
+.badge{padding:3px 11px!important}
+.badge.f1{background:var(--kin)!important;border-color:var(--kin)!important;color:#fff!important}
+.sig{background:var(--kin-soft)!important}
+.sig b{color:var(--kin)!important}
+.lv.h{background:var(--kin)!important;border-color:var(--kin)!important}
+
+/* ---- 標題字 ---- */
+.name,.city>h2,.group>h2,section.sec>h2,.panel>h2,.infotext h3,.dish b,.parth,.area>h3,.area h3,.route h3,.quick h2{font-family:var(--display)!important;letter-spacing:.03em}
+.name{font-weight:900!important}
+.city>h2,.group>h2{font-weight:900!important;font-size:clamp(28px,4.5vw,36px)!important;margin-top:8px}
+.city>h2 small,.group>h2 small{font-family:var(--kick)!important;letter-spacing:.12em}
+.area>h3,.area h3{font-weight:700!important;border-bottom:0!important;padding-bottom:0!important}
+.area>h3::before,.area h3::before{content:"";display:inline-block;width:18px;height:3px;border-radius:3px;background:var(--kin);vertical-align:middle;margin-right:8px}
+.parth{color:var(--ai)!important}
+
+/* ---- 手機 ---- */
+@media (max-width:720px){
+  .filters,nav.toc{position:static!important}
+  .filters .frow{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .filters .frow::-webkit-scrollbar{display:none}
+  .filters .frow>*{flex:none}
+  .filters .flabel{width:auto!important;margin-right:4px}
+  .filters .tools{width:auto!important}
+  .filters .search{width:200px!important}
+  #frow .search{width:180px!important}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:16px}
+  .hero{padding-block:28px 16px}
+  .grid,.pick{grid-template-columns:1fr!important}
+  .search{margin-left:0!important}
+}
+
+.cityh{font:900 26px var(--display);margin:30px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--kin)}
+.areah{font:700 17px var(--display);color:var(--muted);margin:18px 0 10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.sc{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(20,30,60,.08);display:flex;flex-direction:column;min-width:0;scroll-margin-top:calc(var(--navh,90px) + 12px)}
+.sc .ph{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--paper)}
+.sc .ph figure{flex:0 0 86%;margin:0;scroll-snap-align:start;position:relative}
+.sc .ph img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;max-width:100%}
+.sc .ph figcaption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:12px;padding:16px 10px 6px}
+.sc .ph figcaption small{display:block;font-size:10px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px}
+.sc h3{font:700 19px var(--display);margin:0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.sc h3 small{font:400 12.5px var(--body);color:var(--muted)}
+.rk{font:700 11.5px var(--body);border-radius:999px;padding:2px 9px;color:#fff;background:var(--ai)}
+.rk.r1{background:#C9871B}.rk.r2{background:#8A8F99}.rk.r3{background:var(--ai)}.rk.r4{background:#0E8A7E}
+.tags{display:flex;flex-wrap:wrap;gap:5px}.tags span{font-size:12px;background:var(--ai-soft);color:var(--ai);border-radius:999px;padding:1px 9px}
+.sc dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:0;font-size:14px}
+.sc dt{color:var(--muted);white-space:nowrap}.sc dd{margin:0;min-width:0;word-break:break-word}
+.sc p{margin:0;line-height:1.7;font-size:14.5px}
+.sc ul{margin:0;padding-left:20px;font-size:14px;line-height:1.65}
+.sc ul.tp{color:var(--muted)}
+.sc .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sc .links a,.sc .links button{font:600 13px var(--body);text-decoration:none;border:1px solid var(--line);padding:5px 12px;border-radius:999px;color:var(--ai);background:var(--surface);cursor:pointer}
+.sc .links .go{background:var(--ai);color:#fff;border-color:var(--ai)}
+.sc .links .addplan{border-style:dashed}
+.sc .links .addplan[aria-pressed="true"]{background:var(--kin-soft);border-style:solid}
+.src{font-size:11.5px;color:var(--muted);word-break:break-all}
+.src a{color:var(--muted)}
+.dsw{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap}
+.dsw input{position:absolute;opacity:0;pointer-events:none}
+.dsw label{border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;background:var(--surface);font-weight:600}
+.dsw input:checked+label{background:var(--ai);border-color:var(--ai);color:#fff}
+body:has(#cf-osaka:checked) .c-nagoya,body:has(#cf-osaka:checked) .c-kyoto,body:has(#cf-nagoya:checked) .c-osaka,body:has(#cf-nagoya:checked) .c-kyoto{display:none!important}
+.empty{color:var(--muted)}
+.addplan{font:500 13px var(--body);border:1px dashed var(--ai)!important;background:var(--surface);color:var(--ai);padding:4px 12px;border-radius:999px;cursor:pointer}
+.addplan[aria-pressed="true"]{background:var(--ai-soft);border-style:solid!important;font-weight:700}
+.basketfab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--kin);color:#fff!important;text-decoration:none;font:700 15px var(--body);padding:12px 18px;border-radius:999px;box-shadow:0 8px 24px rgba(217,105,46,.35)}
+.basketfab b{font-family:var(--mono);background:#fff;color:var(--kin);border-radius:999px;padding:0 8px;margin:0 2px}
+.basketfab[hidden]{display:none!important}
+</style>
+<script src="jds.js?v=cd6cf411"></script>
+</head>
+<body>
+<header class="site"><div class="wrap bar">
+  <a class="brand" href="gay-guide.html" aria-label="JD的旅遊規劃 首頁"><span class="logo"><img src="icon-sm.png" alt="JD"></span><span class="brand-t"><b>JD的旅遊規劃</b><small>Travel Notes 2026</small></span></a>
+  <nav class="sitetabs" aria-label="頁面"><a href="gay-guide.html">G店家地圖</a><a href="sights.html">景點介紹</a><a href="food.html">美食介紹</a><a href="shops.html" aria-current="page">想逛商家</a><a href="nearby.html">附近／地圖</a><a href="plan.html">行程規劃</a><a href="suggest.html">行程建議</a><a href="route.html">地鐵路線</a><a href="tickets.html">車票怎麼買</a></nav>
+</div></header>
+<section class="hero wrap"><p class="eyebrow">Shops</p><h1>想逛商家</h1><p class="lede">想順路逛的店：潛水用品。依城市和地區分類，每間都有營業時間、電話、最近的車站出口，可以直接加進行程或查怎麼去。營業時間與庫存可能變動，出發前建議先看官網或打電話確認。</p></section>
+<main class="wrap"><div class="dsw" role="radiogroup" aria-label="依城市"><input type="radio" name="cf" id="cf-all" value="all" checked><label for="cf-all">全部</label><input type="radio" name="cf" id="cf-osaka" value="osaka"><label for="cf-osaka">大阪</label><input type="radio" name="cf" id="cf-nagoya" value="nagoya"><label for="cf-nagoya">名古屋</label></div><h2 class="cityh c-osaka">大阪</h2><h3 class="areah c-osaka">心齋橋・長堀橋</h3><div class="cards c-osaka"><article class="sc c-osaka" id="machi-diving-ya"><div class="ph"><figure><img src="shop-img/machi-diving-ya/01.jpg" alt="維修工作室（官網照片）" loading="lazy"><figcaption>維修工作室（官網照片）<small>來源：街のダイビング屋さん 官網, https://diving-ya.com/maintenance/</small></figcaption></figure><figure><img src="shop-img/machi-diving-ya/02.jpg" alt="調節器零件保養前後" loading="lazy"><figcaption>調節器零件保養前後<small>來源：街のダイビング屋さん 官網, https://diving-ya.com/maintenance/</small></figcaption></figure><figure><img src="shop-img/machi-diving-ya/03.jpg" alt="錶的目視與耐壓檢查" loading="lazy"><figcaption>錶的目視與耐壓檢查<small>來源：街のダイビング屋さん 官網, https://diving-ya.com/maintenance/</small></figcaption></figure></div><div class="bd"><h3><span class="rk r1">推薦1</span>街のダイビング屋さん<small>まちのダイビングやさん</small></h3><div class="tags"><span>二手</span><span>新品</span><span>買取</span><span>維修保養</span><span>租借</span></div><p>心齋橋北邊博勞町的潛水器材專門店，新品、二手器材都賣，也收購二手器材。自家有維修工作室，做調節器、BCD、錶的 overhaul 和電腦錶換電池，也有器材租借。</p><dl><dt>營業</dt><dd>11:00–18:00</dd><dt>公休</dt><dd>週日（官網寫『日曜（オフシーズンのみ）』，11/1 週日大概率休）、黃金週・盂蘭盆・年末年始；11/3 國定假日官網未註明，建議先問</dd><dt>電話</dt><dd><a href="tel:+81661212123">06-6121-2123</a></dd><dt>地址</dt><dd>大阪府大阪市中央区博労町3-2-15</dd><dt>交通</dt><dd>長堀橋站 2-B 號出口，步行約 6 分（或 心斎橋站 クリスタ長堀 北6・北7階段，約 7 分）<br><small class="muted">2-B 出口上地面後往西北走約 500m，在博勞町 3 丁目巷內</small></dd></dl><ul><li>新品＋二手器材買賣，也收購二手器材（有古物商許可）</li><li>自家工作室：調節器／八爪魚／儀表／BCD overhaul、電腦錶換電池</li><li>官網列出的品牌很多：SCUBAPRO、AQUALUNG、GULL、TUSA、mares、Bism、SUUNTO、Cressi 等</li><li>器材租借、器材保管服務</li></ul><ul class="tp"><li>二手貨大多掛在 Yahoo!拍賣（賣家 diving_ya）和樂天網店，店裡現場的二手庫存不一定多，想看特定品項請先寫信（info@diving-ya.com）或打電話問</li><li>從天下茶屋搭堺筋線直達長堀橋（不用轉車），2-B 出口走約 6 分</li><li>官網寫的『心齋橋・長堀』路線：從クリスタ長堀地下街的北6／北7階段上地面，經 Hands 旁的加油站，沿單行道往北約 250m</li><li>0120-218-268 是日本國內免付費電話，用國外手機可能打不通，改撥 06-6121-2123</li><li>官網列的信用卡（VISA/Master/JCB/Amex/Diners）是網購付款方式，店面能不能刷卡、能不能免稅官網都沒寫，最好準備現金</li><li>建議排 10/29–10/31 或 11/2 上午去，週日不要去</li></ul><div class="links"><button type="button" class="addplan" data-plan="shop:machi-diving-ya">＋行程</button><a class="go" href="route.html#machi-diving-ya">地鐵怎麼去</a><a href="nearby.html#machi-diving-ya">附近</a><a href="https://diving-ya.com/" target="_blank" rel="noopener">官網 ↗</a><a href="https://www.google.com/maps/search/?api=1&amp;query=%E8%A1%97%E3%81%AE%E3%83%80%E3%82%A4%E3%83%93%E3%83%B3%E3%82%B0%E5%B1%8B%E3%81%95%E3%82%93%20%E5%A4%A7%E9%98%AA%E5%BA%9C%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E5%8D%9A%E5%8A%B4%E7%94%BA3-2-15" target="_blank" rel="noopener">Google 地圖</a></div><div class="src">資料來源：<a href="https://diving-ya.com/" target=_blank rel=noopener>https://diving-ya.com/</a> <a href="https://diving-ya.com/hpgen/HPB/shop/shopguide.html" target=_blank rel=noopener>https://diving-ya.com/hpgen/HPB/shop/shopguide.html</a> <a href="https://diving-ya.com/hpgen/HPB/shop/business.html" target=_blank rel=noopener>https://diving-ya.com/hpgen/HPB/shop/business.html</a> <a href="https://diving-ya.com/kaitori/shop/" target=_blank rel=noopener>https://diving-ya.com/kaitori/shop/</a> <a href="https://diving-ya.com/maintenance/" target=_blank rel=noopener>https://diving-ya.com/maintenance/</a> <a href="https://map.yahoo.co.jp/v3/place/15jAztshdc2" target=_blank rel=noopener>https://map.yahoo.co.jp/v3/place/15jAztshdc2</a> <a href="https://www.openstreetmap.org/ (subway_entrance 2-B 座標)" target=_blank rel=noopener>https://www.openstreetmap.org/ (subway_entrance 2-B 座標)</a></div></div></article></div><h3 class="areah c-osaka">城東・新森古市</h3><div class="cards c-osaka"><article class="sc c-osaka" id="bonheur"><div class="ph"><figure><img src="shop-img/bonheur/01.jpg" alt="店面外觀（夜間）" loading="lazy"><figcaption>店面外觀（夜間）<small>來源：ダイビングショップ ボヌール 官網, https://divingshop-bonheur.com/shop/index.html</small></figcaption></figure><figure><img src="shop-img/bonheur/02.jpg" alt="BCD與調節器吊掛區" loading="lazy"><figcaption>BCD與調節器吊掛區<small>來源：ダイビングショップ ボヌール 官網, https://divingshop-bonheur.com/</small></figcaption></figure><figure><img src="shop-img/bonheur/03.jpg" alt="防寒衣吊掛區" loading="lazy"><figcaption>防寒衣吊掛區<small>來源：ダイビングショップ ボヌール 官網, https://divingshop-bonheur.com/</small></figcaption></figure><figure><img src="shop-img/bonheur/04.jpg" alt="調節器特寫" loading="lazy"><figcaption>調節器特寫<small>來源：ダイビングショップ ボヌール 官網, https://divingshop-bonheur.com/equipment/sale.html</small></figcaption></figure></div><div class="bd"><h3><span class="rk r2">推薦2</span>ダイビングショップ ボヌール（Diving Shop Bonheur）<small>ダイビングショップ ボヌール</small></h3><div class="tags"><span>二手</span><span>新品</span><span>買取</span><span>租借</span><span>器材保管</span></div><p>城東區的小型潛水店，主要辦體驗潛水、證照課程和潛水團，也賣新品、收購二手器材。收來的二手貨主要拿到 Yahoo!拍賣（ヤフオク）賣，店裡不一定有現貨。</p><dl><dt>營業</dt><dd>10:00–20:00</dd><dt>公休</dt><dd>不定休（官網）；店家也帶潛水團，人可能出海，一定要先打電話確認</dd><dt>電話</dt><dd><a href="tel:+81661807422">06-6180-7422</a></dd><dt>地址</dt><dd>大阪府大阪市城東区古市3-25-15</dd><dt>交通</dt><dd>新森古市站 1 號出口，步行約 2 分（或 清水站 1 號出口，約 11 分）<br><small class="muted">1號出口出來右轉走130m，到路口不過馬路，右轉再走30m</small></dd></dl><ul><li>收購二手器材：換電池式電腦錶、面鏡／蛙鞋等輕裝備、BCD／調節器等重裝備，舊品或故障品也能談</li><li>新品代理：GULL、AQUALUNG、mares、TUSA、SUUNTO；海上用品有 U.S.DIVERS、AQA、REEF TOURER，可以看型錄訂貨</li><li>官網寫信用卡和電子錢包都能用</li><li>有器材租借和器材保管服務</li></ul><ul class="tp"><li>二手庫存主要放在 Yahoo!拍賣，想看實品請先打電話（或用官網的 LINE）約時間</li><li>最近的車站是今里筋線新森古市（I16），不是蒲生四丁目或今福鶴見（那兩站離這裡約 2km）</li><li>從天下茶屋過去：堺筋線到長堀橋，轉長堀鶴見綠地線到蒲生四丁目，再轉今里筋線到新森古市，要轉 2 次車，車程約 40 分（估計）</li><li>附近沒有店家的停車場，請用附近的投幣式停車場</li></ul><div class="links"><button type="button" class="addplan" data-plan="shop:bonheur">＋行程</button><a class="go" href="route.html#bonheur">地鐵怎麼去</a><a href="nearby.html#bonheur">附近</a><a href="https://divingshop-bonheur.com/" target="_blank" rel="noopener">官網 ↗</a><a href="https://www.google.com/maps/search/?api=1&amp;query=%E3%83%80%E3%82%A4%E3%83%93%E3%83%B3%E3%82%B0%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97%20%E3%83%9C%E3%83%8C%E3%83%BC%E3%83%AB%EF%BC%88Diving%20Shop%20Bonheur%EF%BC%89%20%E5%A4%A7%E9%98%AA%E5%BA%9C%E5%A4%A7%E9%98%AA%E5%B8%82%E5%9F%8E%E6%9D%B1%E5%8C%BA%E5%8F%A4%E5%B8%823-25-15" target="_blank" rel="noopener">Google 地圖</a></div><div class="src">資料來源：<a href="https://divingshop-bonheur.com/" target=_blank rel=noopener>https://divingshop-bonheur.com/</a> <a href="https://divingshop-bonheur.com/shop/index.html" target=_blank rel=noopener>https://divingshop-bonheur.com/shop/index.html</a> <a href="https://divingshop-bonheur.com/equipment/sale.html" target=_blank rel=noopener>https://divingshop-bonheur.com/equipment/sale.html</a> <a href="https://www.openstreetmap.org/ (subway_entrance 座標)" target=_blank rel=noopener>https://www.openstreetmap.org/ (subway_entrance 座標)</a></div></div></article></div><h3 class="areah c-osaka">梅田・堂山</h3><div class="cards c-osaka"><article class="sc c-osaka" id="mic21-umeda"><div class="ph"><figure><img src="shop-img/mic21-umeda/01.jpg" alt="梅田店店面" loading="lazy"><figcaption>梅田店店面<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure><figure><img src="shop-img/mic21-umeda/02.jpg" alt="調節器、BCD 重裝備區" loading="lazy"><figcaption>調節器、BCD 重裝備區<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure><figure><img src="shop-img/mic21-umeda/03.jpg" alt="面鏡與蛙鞋牆" loading="lazy"><figcaption>面鏡與蛙鞋牆<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure><figure><img src="shop-img/mic21-umeda/04.jpg" alt="電腦錶展示櫃" loading="lazy"><figcaption>電腦錶展示櫃<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure><figure><img src="shop-img/mic21-umeda/05.jpg" alt="防寒衣吊掛區" loading="lazy"><figcaption>防寒衣吊掛區<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure><figure><img src="shop-img/mic21-umeda/06.jpg" alt="水中相機外殼與燈" loading="lazy"><figcaption>水中相機外殼與燈<small>來源：mic21 官網 梅田店頁, https://www.mic21.com/shop/show/shop/7.html</small></figcaption></figure></div><div class="bd"><h3><span class="rk r3">比價用</span>mic21 梅田店（エムアイシー21）<small>エムアイシーにじゅういち うめだてん</small></h3><div class="tags"><span>新品</span><span>大型店</span><span>免稅</span><span>收購／舊換新</span><span>比價</span></div><p>自稱關西最大級的潛水用品店，調節器、BCD 等重裝備在 2 樓，面鏡、蛙鞋、防寒衣、電腦錶、水中相機的品項也很多。主要賣新品，很適合拿來跟二手價格比價。</p><dl><dt>營業</dt><dd>12:00–20:00</dd><dt>公休</dt><dd>全年無休（官網：年末年始也營業）</dd><dt>電話</dt><dd><a href="tel:+81663630613">06-6363-0613</a></dd><dt>地址</dt><dd>大阪府大阪市北区堂山町3-3</dd><dt>交通</dt><dd>東梅田站 M-10（泉の広場），步行約 5 分（或 梅田站 M-10（泉の広場），約 9 分）<br><small class="muted">走地下街 Whity 到泉之廣場，M10 出口右側樓梯上地面約 100m</small></dd></dl><ul><li>2 樓是調節器、BCD 等重裝備，各品牌都有（也有賣 GULL）</li><li>電腦錶（含 GARMIN）、水中相機外殼、閃燈的品項很多，可以實際拿起來看</li><li>官網寫可以免稅（電子申報）、各種信用卡都能刷、日本國內免運（可以寄到飯店）</li><li>店頭可以做舊換新（下取り）和收購（買取り）</li></ul><ul class="tp"><li>主要賣新品，二手貨不多，適合先查好價格再去 街のダイビング屋さん 或 Bonheur 比較</li><li>下取り／買取り要帶身分證件（護照可以），防寒衣、乾式潛水衣和包包不收</li><li>從天下茶屋過去：御堂筋線在動物園前轉車到梅田，或搭堺筋線到扇町再走約 10 分</li><li>中午 12 點才開，排在下午去</li></ul><div class="links"><button type="button" class="addplan" data-plan="shop:mic21-umeda">＋行程</button><a class="go" href="route.html#mic21-umeda">地鐵怎麼去</a><a href="nearby.html#mic21-umeda">附近</a><a href="https://www.mic21.com/shop/show/shop/7.html" target="_blank" rel="noopener">官網 ↗</a><a href="https://www.google.com/maps/search/?api=1&amp;query=mic21%20%E6%A2%85%E7%94%B0%E5%BA%97%EF%BC%88%E3%82%A8%E3%83%A0%E3%82%A2%E3%82%A4%E3%82%B7%E3%83%BC21%EF%BC%89%20%E5%A4%A7%E9%98%AA%E5%BA%9C%E5%A4%A7%E9%98%AA%E5%B8%82%E5%8C%97%E5%8C%BA%E5%A0%82%E5%B1%B1%E7%94%BA3-3" target="_blank" rel="noopener">Google 地圖</a></div><div class="src">資料來源：<a href="https://www.mic21.com/shop/show/shop/7.html" target=_blank rel=noopener>https://www.mic21.com/shop/show/shop/7.html</a> <a href="https://www.mic21.com/guide/kaitori.php" target=_blank rel=noopener>https://www.mic21.com/guide/kaitori.php</a> <a href="https://ec.mic21.com/shop/pages/gull.aspx" target=_blank rel=noopener>https://ec.mic21.com/shop/pages/gull.aspx</a> <a href="https://blog.mic21.com/blog/show/blog/22776.html" target=_blank rel=noopener>https://blog.mic21.com/blog/show/blog/22776.html</a> <a href="https://www.openstreetmap.org/ (Whity M-10 出口座標)" target=_blank rel=noopener>https://www.openstreetmap.org/ (Whity M-10 出口座標)</a></div></div></article></div><h2 class="cityh c-nagoya">名古屋</h2><h3 class="areah c-nagoya">名古屋 栄（新栄町）</h3><div class="cards c-nagoya"><article class="sc c-nagoya" id="mic21-nagoya"><div class="ph"><figure><img src="shop-img/mic21-nagoya/01.jpg" alt="名古屋店店面" loading="lazy"><figcaption>名古屋店店面<small>來源：mic21 官網 名古屋店頁, https://www.mic21.com/shop/show/shop/6.html</small></figcaption></figure><figure><img src="shop-img/mic21-nagoya/02.jpg" alt="電腦錶與 BCD 走道" loading="lazy"><figcaption>電腦錶與 BCD 走道<small>來源：mic21 官網 名古屋店頁, https://www.mic21.com/shop/show/shop/6.html</small></figcaption></figure><figure><img src="shop-img/mic21-nagoya/03.jpg" alt="面鏡與呼吸管牆" loading="lazy"><figcaption>面鏡與呼吸管牆<small>來源：mic21 官網 名古屋店頁, https://www.mic21.com/shop/show/shop/6.html</small></figcaption></figure></div><div class="bd"><h3><span class="rk r4">推薦補充</span>mic21 名古屋店（エムアイシー21）<small>エムアイシーにじゅういち なごやてん</small></h3><div class="tags"><span>新品</span><span>大型店</span><span>免稅</span><span>收購／舊換新</span><span>會說中文</span></div><p>mic21 在名古屋的店，在榮東邊大樓的 1 樓，面鏡、蛙鞋、電腦錶、BCD、水中攝影器材都有，也有衝浪板和 SUP。名古屋市中心找不到專賣二手潛水器材的實體店，這間是最值得逛的大型店。</p><dl><dt>營業</dt><dd>12:00–20:00</dd><dt>公休</dt><dd>全年無休（官網；11/3 國定假日也營業）</dd><dt>電話</dt><dd><a href="tel:+81529503533">052-950-3533</a></dd><dt>地址</dt><dd>愛知県名古屋市中区新栄町2-9 スカイオアシス栄1F</dd><dt>交通</dt><dd>栄站 12 號出口，步行約 5 分（或 新栄町站 1 號出口，約 10 分）<br><small class="muted">12號出口往東走約 250m，找紅色 mic21 招牌和海洋大看板</small></dd></dl><ul><li>官網寫展示的商品都可以試穿</li><li>官網寫可以免稅、各種信用卡都能刷，店員會說英文、中文、韓文</li><li>店頭可以做舊換新（下取り）和收購（買取り）</li><li>從伏見搭東山線坐 1 站到榮就到了</li></ul><ul class="tp"><li>主要賣新品；二手需求還是以大阪的兩間店為主</li><li>中午 12 點才開</li><li>收購要帶護照等身分證件</li></ul><div class="links"><button type="button" class="addplan" data-plan="shop:mic21-nagoya">＋行程</button><a class="go" href="route.html#mic21-nagoya">地鐵怎麼去</a><a href="nearby.html#mic21-nagoya">附近</a><a href="https://www.mic21.com/shop/show/shop/6.html" target="_blank" rel="noopener">官網 ↗</a><a href="https://www.google.com/maps/search/?api=1&amp;query=mic21%20%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%BA%97%EF%BC%88%E3%82%A8%E3%83%A0%E3%82%A2%E3%82%A4%E3%82%B7%E3%83%BC21%EF%BC%89%20%E6%84%9B%E7%9F%A5%E7%9C%8C%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%B8%AD%E5%8C%BA%E6%96%B0%E6%A0%84%E7%94%BA2-9%20%E3%82%B9%E3%82%AB%E3%82%A4%E3%82%AA%E3%82%A2%E3%82%B7%E3%82%B9%E6%A0%841F" target="_blank" rel="noopener">Google 地圖</a></div><div class="src">資料來源：<a href="https://www.mic21.com/shop/show/shop/6.html" target=_blank rel=noopener>https://www.mic21.com/shop/show/shop/6.html</a> <a href="https://www.mic21.com/guide/kaitori.php" target=_blank rel=noopener>https://www.mic21.com/guide/kaitori.php</a> <a href="https://www.openstreetmap.org/ (栄駅 12 號出口座標)" target=_blank rel=noopener>https://www.openstreetmap.org/ (栄駅 12 號出口座標)</a></div></div></article></div></main>
+<footer class="wrap"><p>照片來源標在每張圖下方。營業時間、價格、庫存以店家公告為準。</p></footer>
+<script>
+/* ---------- 行程籃（與「行程規劃」頁共用） ---------- */
+(function(){
+  const KEY = 'jd-basket';
+  const get = () => { try { return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e) { return []; } };
+  const set = v => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch(e) {} };
+  const fab = document.createElement('a'); fab.className = 'basketfab'; fab.href = 'plan.html'; document.body.appendChild(fab);
+  function sync(){
+    const b = get();
+    fab.innerHTML = `行程籃 <b>${b.length}</b> → 排行程`; fab.hidden = !b.length;
+    document.querySelectorAll('[data-plan]').forEach(x => { const on = b.includes(x.dataset.plan); x.setAttribute('aria-pressed', on); x.textContent = on ? '✓ 已加入行程' : '＋行程'; });
+  }
+  document.addEventListener('click', e => {
+    const x = e.target.closest('[data-plan]'); if (!x) return;
+    e.preventDefault(); e.stopPropagation();
+    const b = get(), id = x.dataset.plan, i = b.indexOf(id);
+    if (i >= 0) b.splice(i,1); else b.push(id);
+    set(b); sync();
+  }, true);
+  new MutationObserver(() => { clearTimeout(sync.t); sync.t = setTimeout(sync, 50); }).observe(document.body, {childList:true, subtree:true});
+  addEventListener('storage', sync); sync();
+})();
+
+(function(){ const h = decodeURIComponent(location.hash.slice(1)); if (h){ const el = document.getElementById(h); if (el) setTimeout(() => el.scrollIntoView({block:'start'}), 60); } })();
+</script>
+</body>
+</html>
