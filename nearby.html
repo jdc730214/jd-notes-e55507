@@ -77,8 +77,12 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .mmlegend span{display:inline-flex;align-items:center;gap:5px}.mmlegend i{width:16px;height:5px;border-radius:3px;display:inline-block}.mmlegend small{color:var(--muted);font-family:var(--mono)}
 .mmwrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px;background:#FBFBFD;-webkit-overflow-scrolling:touch}
 #mmSvg svg{display:block}
-#mmSvg .mmline{opacity:.72;mix-blend-mode:multiply}
+#mmSvg .mmline{opacity:.85}
 #mmSvg .mmrail{opacity:.8;mix-blend-mode:multiply}
+#mmSvg .mmbus{opacity:.9}
+.mmlegend i.dot{height:0;border-top:3px dotted;background:none!important}
+.mmbl{font-weight:600}
+.mmbref{pointer-events:none}
 .mmlb{fill:#1E2026;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 .mmst{cursor:pointer}.mmst:hover circle:first-child,.mmst.on circle:first-child{fill:#FFE08A}
 .mmst:focus{outline:none}.mmst:focus-visible circle:first-child{stroke:#2747C8;stroke-width:3}
