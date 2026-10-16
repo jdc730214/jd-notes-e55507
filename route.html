@@ -60,6 +60,12 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 
 .kindtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
 #mmPanel{padding-block:10px}
+.mmtog{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px;margin:6px 0 4px}.mmtog small{color:var(--muted);margin-left:4px}
+.mmlegend i.dash{height:0;border-top:3px dashed;background:none!important}
+.mmpin{cursor:pointer}.mmpint{fill:#B4521C;font-weight:700;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px}
+.mmexl{font-weight:700;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px}.mmexl.air{text-decoration:underline}
+.mmrl{font-weight:600}
+
 .mmsum{cursor:pointer;font:700 17px var(--display);list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
 .mmsum::-webkit-details-marker{display:none}.mmsum::after{content:"▸";margin-left:auto;color:var(--muted)}#mmPanel[open] .mmsum::after{content:"▾"}
 .mmsum small{font:400 12.5px var(--body);color:var(--muted)}
@@ -357,10 +363,11 @@ select,input{border-radius:10px!important}
   <details class="panel" id="mmPanel">
     <summary class="mmsum">🗺 地鐵路線圖（大阪・京都・名古屋）<small>點車站可設為起點或目的地</small></summary>
     <div class="mmbar"><div class="kindtabs" id="mmTabs"></div><div class="mmzoom"><button type="button" class="btn" data-mmz="0.67" aria-label="縮小">－</button><span id="mmZ">100%</span><button type="button" class="btn" data-mmz="1.5" aria-label="放大">＋</button></div></div>
+    <div class="mmtog"><label class="check"><input type="checkbox" id="mmRail" checked> 顯示 JR・私鐵・機場線（虛線）</label><label class="check"><input type="checkbox" id="mmPlan" checked> 標出我的行程地點 📍<small id="mmPlanN"></small></label></div>
     <div class="mmlegend" id="mmLegend"></div>
     <div class="mmwrap"><div id="mmSvg"></div></div>
     <div class="mmpop" id="mmPop" hidden></div>
-    <p class="mmnote">依車站實際位置繪製的示意圖（只含市營地鐵，不含 JR、私鐵）。🏠 是你們住宿最近的車站。官方路線圖：<a id="mmOff" href="#" target="_blank" rel="noopener">官網 ↗</a></p>
+    <p class="mmnote">依車站實際位置繪製的示意圖：實線是市營地鐵，虛線是行程會用到的 JR・私鐵・新幹線，箭頭指向市外的目的地（例如關西機場）。🏠 是住宿最近的車站，📍 是你在行程規劃、行程籃或這頁選的地點（要搭車到的那一站）。官方路線圖：<a id="mmOff" href="#" target="_blank" rel="noopener">官網 ↗</a></p>
   </details>
   <section class="panel" aria-label="想去的地方">
     <h2>想去哪裡 <small id="pickHint">點一個地點</small></h2>
@@ -1340,21 +1347,60 @@ document.addEventListener('click', e => { if (e.target.classList && e.target.cla
 document.addEventListener('change', e => { if (e.target.id === 'dlgFrom' && e.target.value) chooseFrom(e.target.value); });
 
 /* ---------- 地鐵路線圖（依車站經緯度畫，點車站可設為起點／目的地） ---------- */
-const MM = {city:'osaka', zoom:1, pick:null};
+const MM = {city:'osaka', zoom:1, pick:null, rail:true, plan:true};
+const RAIL = {"osaka": [{"name": "南海 本線・空港線（往關西機場）", "op": "南海", "color": "#F39800", "kind": "airport", "stations": [["なんば", 34.663663, 135.501775], ["新今宮", 34.650143, 135.500219], ["天下茶屋", 34.637155, 135.496659], ["岸里玉出", 34.629562, 135.494754]], "exit": {"from": "岸里玉出", "dir_deg": 204, "label": "→ 關西機場（空港急行約40分）"}}, {"name": "JR 阪和線（はるか）", "op": "JR西日本", "color": "#0072BC", "kind": "airport", "stations": [["天王寺", 34.647343, 135.515241]], "exit": {"from": "天王寺", "dir_deg": 191, "label": "→ 關西機場（はるか）"}}, {"name": "JR 京都線（新快速）", "op": "JR西日本", "color": "#0072BC", "kind": "jr", "stations": [["大阪", 34.702213, 135.495573], ["新大阪", 34.734078, 135.501873]], "exit": {"from": "新大阪", "dir_deg": 32, "label": "→ 京都（新快速29分）"}}, {"name": "東海道新幹線", "op": "JR東海", "color": "#1E50A2", "kind": "shinkansen", "stations": [["新大阪", 34.733539, 135.500189]], "exit": {"from": "新大阪", "dir_deg": 40, "label": "→ 京都・名古屋（新幹線）"}}, {"name": "阪急 京都線", "op": "阪急", "color": "#8C2232", "kind": "private", "stations": [["大阪梅田", 34.705419, 135.498372], ["十三", 34.720541, 135.482178], ["淡路", 34.739255, 135.516892]], "exit": {"from": "淡路", "dir_deg": 32, "label": "→ 京都河原町"}}, {"name": "阪急 宝塚線・箕面線（往箕面）", "op": "阪急", "color": "#8C2232", "kind": "private", "stations": [["大阪梅田", 34.705419, 135.498372], ["十三", 34.720541, 135.482178]], "exit": {"from": "十三", "dir_deg": 346, "label": "→ 石橋阪大前 → 箕面"}}, {"name": "北大阪急行（御堂筋線直通）", "op": "北大阪急行", "color": "#E5171F", "kind": "private", "stations": [["江坂", 34.758866, 135.497099], ["緑地公園", 34.775423, 135.495378], ["桃山台", 34.793111, 135.497318], ["千里中央", 34.80988, 135.495052], ["箕面船場阪大前", 34.821811, 135.490232], ["箕面萱野", 34.831376, 135.48906]], "exit": null}, {"name": "京阪 本線", "op": "京阪", "color": "#00A0E9", "kind": "private", "stations": [["淀屋橋", 34.692501, 135.501293], ["北浜", 34.691505, 135.507584], ["天満橋", 34.69033, 135.516422], ["京橋", 34.696989, 135.532166]], "exit": {"from": "京橋", "dir_deg": 35, "label": "→ 京都 祇園四条"}}, {"name": "近鉄 難波線・奈良線", "op": "近鉄", "color": "#E2001A", "kind": "private", "stations": [["大阪難波", 34.667181, 135.497776], ["近鉄日本橋", 34.666909, 135.5057], ["大阪上本町", 34.665581, 135.52015], ["鶴橋", 34.665251, 135.530739]], "exit": {"from": "鶴橋", "dir_deg": 92, "label": "→ 奈良・名古屋（近鉄特急）"}}, {"name": "阪急 神戸線（往有馬・神戶）", "op": "阪急", "color": "#8C2232", "kind": "private", "stations": [["大阪梅田", 34.705419, 135.498372], ["十三", 34.720541, 135.482178]], "exit": {"from": "十三", "dir_deg": 318, "label": "→ 神戸三宮"}}], "kyoto": [{"name": "JR 奈良線", "op": "JR西日本", "color": "#0072BC", "kind": "jr", "stations": [["京都", 34.98535, 135.758766], ["東福寺", 34.980995, 135.769936], ["稲荷", 34.966805, 135.77067]], "exit": {"from": "稲荷", "dir_deg": 162, "label": "→ 宇治・奈良"}}, {"name": "JR 京都線（はるか）", "op": "JR西日本", "color": "#0072BC", "kind": "airport", "stations": [["京都", 34.98535, 135.758766]], "exit": {"from": "京都", "dir_deg": 233, "label": "→ 大阪・關西機場（はるか）"}}, {"name": "東海道新幹線", "op": "JR東海", "color": "#1E50A2", "kind": "shinkansen", "stations": [["京都", 34.984608, 135.75843]], "exit": {"from": "京都", "dir_deg": 81, "label": "→ 名古屋"}, "exits": [{"from": "京都", "dir_deg": 81, "label": "→ 名古屋"}, {"from": "京都", "dir_deg": 218, "label": "→ 新大阪"}]}, {"name": "阪急 京都線", "op": "阪急", "color": "#8C2232", "kind": "private", "stations": [["京都河原町", 35.003763, 135.769608], ["烏丸", 35.003686, 135.760452], ["大宮", 35.003644, 135.748588], ["西院", 35.003566, 135.731766]], "exit": {"from": "西院", "dir_deg": 224, "label": "→ 大阪梅田"}}, {"name": "京阪 本線・鴨東線", "op": "京阪", "color": "#00A0E9", "kind": "private", "stations": [["出町柳", 35.030272, 135.772679], ["三条", 35.00902, 135.772333], ["祇園四条", 35.003233, 135.771931], ["清水五条", 34.995614, 135.768446], ["七条", 34.989069, 135.767914], ["東福寺", 34.981262, 135.770021], ["伏見稲荷", 34.968892, 135.769257]], "exit": {"from": "伏見稲荷", "dir_deg": 186, "label": "→ 大阪 淀屋橋"}}, {"name": "嵐電（京福）嵐山本線", "op": "京福", "color": "#6F3381", "kind": "private", "stations": [["四条大宮", 35.003248, 135.74849], ["西院", 35.003619, 135.733592], ["嵐電天神川", 35.010235, 135.715058], ["太秦広隆寺", 35.013427, 135.70832], ["帷子ノ辻", 35.015251, 135.700398], ["車折神社", 35.016747, 135.689032], ["嵐山", 35.015287, 135.677996]], "exit": null}, {"name": "JR 嵯峨野線", "op": "JR西日本", "color": "#0072BC", "kind": "jr", "stations": [["京都", 34.98535, 135.758766], ["丹波口", 34.995702, 135.742394], ["二条", 35.011028, 135.74173], ["円町", 35.018185, 135.730352], ["嵯峨嵐山", 35.018779, 135.681413]], "exit": null}], "nagoya": [{"name": "JR 東海道線", "op": "JR東海", "color": "#F77321", "kind": "jr", "stations": [["名古屋", 35.170729, 136.881843], ["金山", 35.142812, 136.900724]], "exit": {"from": "金山", "dir_deg": 156, "label": "→ 豊橋・蒲郡"}, "exits": [{"from": "金山", "dir_deg": 156, "label": "→ 豊橋・蒲郡"}, {"from": "名古屋", "dir_deg": 330, "label": "→ 岐阜・米原・京都"}]}, {"name": "東海道新幹線", "op": "JR東海", "color": "#1E50A2", "kind": "shinkansen", "stations": [["名古屋", 35.170581, 136.880982]], "exit": {"from": "名古屋", "dir_deg": 312, "label": "→ 京都・新大阪"}, "exits": [{"from": "名古屋", "dir_deg": 312, "label": "→ 京都・新大阪"}, {"from": "名古屋", "dir_deg": 144, "label": "→ 豊橋"}]}, {"name": "名鉄 名古屋本線", "op": "名鉄", "color": "#E60012", "kind": "private", "stations": [["名鉄名古屋", 35.16942, 136.883937], ["金山", 35.143029, 136.900869]], "exit": {"from": "金山", "dir_deg": 148, "label": "→ 国府・豊川稲荷"}, "exits": [{"from": "金山", "dir_deg": 148, "label": "→ 国府・豊川稲荷"}, {"from": "名鉄名古屋", "dir_deg": 354, "label": "→ 犬山（犬山線）"}]}, {"name": "近鉄 名古屋線", "op": "近鉄", "color": "#E2001A", "kind": "private", "stations": [["近鉄名古屋", 35.16977, 136.883676]], "exit": {"from": "近鉄名古屋", "dir_deg": 249, "label": "→ 大阪難波・長島"}}, {"name": "リニモ（東部丘陵線）", "op": "愛知高速交通", "color": "#00A3AF", "kind": "private", "stations": [["藤が丘", 35.182204, 137.02172]], "exit": {"from": "藤が丘", "dir_deg": 95, "label": "→ 愛・地球博記念公園（ジブリパーク）"}}, {"name": "あおなみ線", "op": "名古屋臨海高速鉄道", "color": "#0068B7", "kind": "private", "stations": [["名古屋", 35.168793, 136.882394], ["ささしまライブ", 35.161671, 136.881521]], "exit": {"from": "ささしまライブ", "dir_deg": 217, "label": "→ 金城ふ頭（リニア・鉄道館）"}}], "_meta": {"generated": "2026-10-16", "coord_source": "OpenStreetMap railway=station nodes (via Overpass), node chosen per operator using operator/ref/website tags; cross-checked against ja.wikipedia article coordinates", "format": {"stations": "[name, lat, lon] in line order", "exit": "the only / first exit arrow; 'exits' lists all exits when a line leaves in more than one direction (draw 'exits' if present, else 'exit')", "dir_deg": "bearing 0=N 90=E, computed from the exit station toward the next real station a few km beyond (actual track direction)"}, "colors_note": "JR West #0072BC, JR Central #F77321, 新幹線 #1E50A2, 阪急 #8C2232 are close to official; 京阪, 近鉄, 南海 (orange), 名鉄, 嵐電 (京紫), 北急 (=御堂筋 red), リニモ, あおなみ are approximations"}};
 const MMOFF = {osaka:'https://subway.osakametro.co.jp/guide/routemap.php', kyoto:'https://www.city.kyoto.lg.jp/kotsu/page/0000008995.html', nagoya:'https://www.kotsu.city.nagoya.jp/jp/pc/SUBWAY/routemap.html'};
+function mmPlanned(city){
+  // 行程規劃的每天地點＋行程籃＋這頁已選的地點
+  let ids = [];
+  try { for (const d of JSON.parse(localStorage.getItem('jd-plan-days')||'[]')) for (const s of d.stops||[]) ids.push(s.id); } catch(e) {}
+  try { ids.push(...JSON.parse(localStorage.getItem('jd-basket')||'[]')); } catch(e) {}
+  ids.push(...(st.sel||[]));
+  const out = {};
+  for (const id of [...new Set(ids)]){
+    const p = byId(id); if (!p || p.kind==='stay' || p.kind==='station') continue;
+    let sn = null, extra = '';
+    if (p.trip){ const t = p.trip.find(t => t.city===city); if (!t) continue; sn = t.station; extra = '（出發站）'; }
+    else if (p.city===city) sn = stationName(city, p) || p.station;
+    if (!sn || !COORD[city+'|'+sn]) continue;
+    (out[sn] ||= []).push(p.name.replace(/（.*?）/g, '') + extra);
+  }
+  return out;
+}
 function mmDraw(){
   const box = $('#mmSvg'); if (!box) return;
   const city = MM.city, Ls = LINES[city].lines;
-  const pts = Ls.flatMap(L => L.stations.filter(s => s[2]).map(s => [s[2], s[3]]));
+  const RL = (typeof RAIL !== 'undefined' && RAIL[city] && MM.rail) ? RAIL[city] : [];
+  const pts = Ls.flatMap(L => L.stations.filter(s => s[2]).map(s => [s[2], s[3]])).concat(RL.flatMap(L => L.stations.map(s => [s[1], s[2]])));
   const la0 = Math.min(...pts.map(p=>p[0])), la1 = Math.max(...pts.map(p=>p[0])), lo0 = Math.min(...pts.map(p=>p[1])), lo1 = Math.max(...pts.map(p=>p[1]));
   const k = Math.cos(((la0+la1)/2) * Math.PI/180);
   const base = Math.max(320, box.parentElement.clientWidth - 4);
-  const W = base * MM.zoom, pad = 46 * Math.max(1, MM.zoom * .7);
+  const W = base * MM.zoom, pad = 60 * Math.max(1, MM.zoom * .6);
   const sx = (W - pad*2) / ((lo1-lo0) * k), H = (la1-la0) * sx + pad*2;
   const X = lo => pad + (lo-lo0) * k * sx, Y = la => pad + (la1-la) * sx;
   const fs = MM.zoom >= 2 ? 11 : MM.zoom >= 1.5 ? 10 : 9;
   const showAll = MM.zoom >= 1.5;
-  let lines = '', dots = '', labels = '';
+  let rail = '', lines = '', dots = '', labels = '', exits = '';
+  // JR・私鐵（虛線）
+  for (const L of RL){
+    const d = L.stations.map((s,i) => (i ? 'L' : 'M') + X(s[2]).toFixed(1) + ' ' + Y(s[1]).toFixed(1)).join(' ');
+    const sw = L.kind==='shinkansen' ? 3 : 2.6;
+    if (L.stations.length > 1) rail += `<path d="${d}" fill="none" stroke="${L.color}" stroke-width="${sw}" stroke-dasharray="${L.kind==='shinkansen' ? '10 4' : '6 4'}" stroke-linecap="round" opacity=".85"/>`;
+    for (const s of L.stations){
+      rail += `<rect x="${(X(s[2])-3).toFixed(1)}" y="${(Y(s[1])-3).toFixed(1)}" width="6" height="6" fill="#fff" stroke="${L.color}" stroke-width="1.6"/>`;
+      if (showAll) labels += `<text x="${(X(s[2])+6).toFixed(1)}" y="${(Y(s[1])+12).toFixed(1)}" font-size="${fs-1}" class="mmlb mmrl" fill="${L.color}">${esc(s[0])}</text>`;
+    }
+    for (const ex of (L.exits || (L.exit ? [L.exit] : []))){
+      const s = L.stations.find(z => z[0]===ex.from) || L.stations.at(-1); if (!s) continue;
+      const a = (ex.dir_deg||0) * Math.PI/180, len = Math.max(40, W * 0.09);
+      const x0 = X(s[2]), y0 = Y(s[1]), x1 = x0 + Math.sin(a)*len, y1 = y0 - Math.cos(a)*len;
+      const air = /機場|空港/.test(ex.label);
+      const showLab = air || MM.zoom >= 1.5;
+      exits += `<g class="mmex"><line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${L.color}" stroke-width="2.4" stroke-dasharray="4 3" marker-end="url(#mmArr)"/>`
+        + (!showLab ? '</g>' : (() => { const right = x1 > W * 0.55, tx = Math.min(W - 4, Math.max(4, x1 + (right ? -2 : 2))), ty = Math.min(H - 6, Math.max(12, y1 + (Math.cos(a) > 0.3 ? -6 : 13)));
+            return `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${right ? 'end' : 'start'}" font-size="${fs}" class="mmlb mmexl${air?' air':''}" fill="${L.color}">${air ? '✈ ' : ''}${esc(ex.label)}</text></g>`; })());
+    }
+  }
   const named = {};
   for (const L of Ls){
     const S = L.stations.filter(s => s[2]);
@@ -1363,22 +1409,30 @@ function mmDraw(){
     for (const s of S) (named[s[0]] ||= {n:s[0], la:s[2], lo:s[3], codes:[], cols:[]}).codes.push(s[1]), named[s[0]].cols.push(L.color);
   }
   const stays = PLACES0.filter(p => p.kind==='stay' && p.city===city);
-  const stayN = new Set(stays.map(p => p.station));
+  const stayN = new Set(stays.map(p => stationName(city, p) || p.station));
+  const PL = MM.plan ? mmPlanned(city) : {};
   for (const s of Object.values(named)){
     const x = X(s.lo), y = Y(s.la), hub = s.codes.length > 1, r = hub ? 5.5 : 3.6;
     const on = MM.pick === s.n;
     dots += `<g class="mmst${on?' on':''}" data-mmst="${esc(s.n)}" tabindex="0" role="button" aria-label="${esc(s.n)}站 ${esc(s.codes.join('/'))}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on?r+3:r}" fill="#fff" stroke="${hub ? '#1E2026' : s.cols[0]}" stroke-width="${hub?2.2:1.8}"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="transparent"/></g>`;
-    if (showAll || hub || stayN.has(s.n) || on)
+    if (showAll || hub || stayN.has(s.n) || PL[s.n] || on)
       labels += `<text x="${(x+7).toFixed(1)}" y="${(y-5).toFixed(1)}" font-size="${hub||on?fs+1:fs}" font-weight="${hub||on?700:500}" class="mmlb">${esc(s.n)}</text>`;
   }
   let marks = '';
-  for (const p of stays){ const c = COORD[city+'|'+p.station]; if (!c) continue;
+  for (const p of stays){ const c = COORD[city+'|'+(stationName(city, p) || p.station)]; if (!c) continue;
     marks += `<g class="mmstay"><text x="${(X(c[1])-9).toFixed(1)}" y="${(Y(c[0])+20).toFixed(1)}" font-size="${fs+5}">🏠</text><text x="${(X(c[1])+9).toFixed(1)}" y="${(Y(c[0])+16).toFixed(1)}" font-size="${fs}" class="mmstayt">住宿</text></g>`; }
-  box.innerHTML = `<svg viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" width="${W.toFixed(0)}" height="${H.toFixed(0)}" role="img" aria-label="${CITY[city]}地鐵路線圖">${lines}${dots}${labels}${marks}</svg>`;
-  $('#mmLegend').innerHTML = Ls.filter(L => !(city==='nagoya' && L.code==='E')).map(L => `<span><i style="background:${L.color}"></i>${esc(L.ja)}<small>${L.code}</small></span>`).join('') + (city==='nagoya' ? '<span><i style="background:#B074D6"></i>名港線<small>E</small></span>' : '');
+  for (const [sn, names] of Object.entries(PL)){ const c = COORD[city+'|'+sn]; const x = X(c[1]), y = Y(c[0]);
+    const lab = names.length > 1 ? `${names[0].slice(0,8)} 等 ${names.length} 處` : names[0].slice(0,12);
+    marks += `<g class="mmpin" data-mmst="${esc(sn)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="none" stroke="#D9692E" stroke-width="3"/><text x="${(x-8).toFixed(1)}" y="${(y-12).toFixed(1)}" font-size="${fs+3}">📍</text><text x="${(x+8).toFixed(1)}" y="${(y+18).toFixed(1)}" font-size="${fs}" class="mmpint">${esc(lab)}</text><title>${esc(names.join('、'))}</title></g>`; }
+  const defs = `<defs><marker id="mmArr" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0L10 5L0 10z" fill="#555"/></marker></defs>`;
+  box.innerHTML = `<svg viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" width="${W.toFixed(0)}" height="${H.toFixed(0)}" role="img" aria-label="${CITY[city]}地鐵路線圖">${defs}${rail}${lines}${exits}${dots}${labels}${marks}</svg>`;
+  $('#mmLegend').innerHTML = Ls.filter(L => !(city==='nagoya' && L.code==='E')).map(L => `<span><i style="background:${L.color}"></i>${esc(L.ja)}<small>${L.code}</small></span>`).join('') + (city==='nagoya' ? '<span><i style="background:#B074D6"></i>名港線<small>E</small></span>' : '')
+    + RL.map(L => `<span><i class="dash" style="border-color:${L.color}"></i>${esc(L.name)}</span>`).join('');
   $('#mmTabs').innerHTML = Object.entries(CITY).map(([c,l]) => `<button type="button" class="chip" data-mmcity="${c}" aria-pressed="${c===city}">${l}</button>`).join('');
   $('#mmZ').textContent = `${Math.round(MM.zoom*100)}%`;
   $('#mmOff').href = MMOFF[city];
+  const np = Object.values(PL).reduce((a,b) => a + b.length, 0);
+  $('#mmPlanN').textContent = np ? `（這個城市 ${np} 處）` : '（行程規劃或行程籃還沒有這個城市的地點）';
   mmPop();
 }
 function mmPop(){
@@ -1398,6 +1452,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { const g = e.target.closest && e.target.closest('[data-mmst]'); if (g && (e.key==='Enter' || e.key===' ')){ e.preventDefault(); MM.pick = g.dataset.mmst; mmDraw(); } });
 $('#mmPanel').addEventListener('toggle', e => { if (e.target.open) mmDraw(); });
+document.addEventListener('change', e => { if (e.target.id==='mmRail'){ MM.rail = e.target.checked; mmDraw(); } else if (e.target.id==='mmPlan'){ MM.plan = e.target.checked; mmDraw(); } });
 addEventListener('resize', () => { if ($('#mmPanel').open) mmDraw(); });
 
 /* ---------- 啟動 ---------- */
