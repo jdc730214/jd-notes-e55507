@@ -75,6 +75,8 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .mmlegend span{display:inline-flex;align-items:center;gap:5px}.mmlegend i{width:16px;height:5px;border-radius:3px;display:inline-block}.mmlegend small{color:var(--muted);font-family:var(--mono)}
 .mmwrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px;background:#FBFBFD;-webkit-overflow-scrolling:touch}
 #mmSvg svg{display:block}
+#mmSvg .mmline{opacity:.72;mix-blend-mode:multiply}
+#mmSvg .mmrail{opacity:.8;mix-blend-mode:multiply}
 .mmlb{fill:#1E2026;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
 .mmst{cursor:pointer}.mmst:hover circle:first-child,.mmst.on circle:first-child{fill:#FFE08A}
 .mmst:focus{outline:none}.mmst:focus-visible circle:first-child{stroke:#2747C8;stroke-width:3}
@@ -1382,10 +1384,21 @@ function mmDraw(){
   const showAll = MM.zoom >= 1.5;
   let rail = '', lines = '', dots = '', labels = '', exits = '';
   // JR・私鐵（虛線）
-  for (const L of RL){
-    const d = L.stations.map((s,i) => (i ? 'L' : 'M') + X(s[2]).toFixed(1) + ' ' + Y(s[1]).toFixed(1)).join(' ');
+  // 同一段被好幾條線共用時，並排錯開畫（每條線偏移不同距離）
+  const segKey = (p, q) => { const A = p[1].toFixed(4)+','+p[2].toFixed(4), B = q[1].toFixed(4)+','+q[2].toFixed(4); return A < B ? A+'|'+B : B+'|'+A; };
+  const SEG = {};
+  RL.forEach((L, li) => L.stations.forEach((s, i) => { if (i) { const k = segKey(L.stations[i-1], s); (SEG[k] ||= []).includes(li) || SEG[k].push(li); } }));
+  const gap = 3.6 * Math.min(Math.max(MM.zoom, 1), 2);
+  RL.forEach((L, li) => {
     const sw = L.kind==='shinkansen' ? 3 : 2.6;
-    if (L.stations.length > 1) rail += `<path d="${d}" fill="none" stroke="${L.color}" stroke-width="${sw}" stroke-dasharray="${L.kind==='shinkansen' ? '10 4' : '6 4'}" stroke-linecap="round" opacity=".85"/>`;
+    L.stations.forEach((s, i) => { if (!i) return;
+      const p = L.stations[i-1], x0 = X(p[2]), y0 = Y(p[1]), x1 = X(s[2]), y1 = Y(s[1]);
+      const share = SEG[segKey(p, s)], n = share.length, j = share.indexOf(li);
+      const len = Math.hypot(x1-x0, y1-y0) || 1, off = (j - (n-1)/2) * gap, ox = -(y1-y0)/len*off, oy = (x1-x0)/len*off;
+      rail += `<line x1="${(x0+ox).toFixed(1)}" y1="${(y0+oy).toFixed(1)}" x2="${(x1+ox).toFixed(1)}" y2="${(y1+oy).toFixed(1)}" stroke="${L.color}" stroke-width="${sw}" stroke-dasharray="${L.kind==='shinkansen' ? '10 4' : '6 4'}" stroke-linecap="round" class="mmrail"/>`;
+    });
+  });
+  for (const L of RL){
     for (const s of L.stations){
       rail += `<rect x="${(X(s[2])-3).toFixed(1)}" y="${(Y(s[1])-3).toFixed(1)}" width="6" height="6" fill="#fff" stroke="${L.color}" stroke-width="1.6"/>`;
       if (showAll) labels += `<text x="${(X(s[2])+6).toFixed(1)}" y="${(Y(s[1])+12).toFixed(1)}" font-size="${fs-1}" class="mmlb mmrl" fill="${L.color}">${esc(s[0])}</text>`;
@@ -1405,7 +1418,7 @@ function mmDraw(){
   for (const L of Ls){
     const S = L.stations.filter(s => s[2]);
     const d = S.map((s,i) => (i ? 'L' : 'M') + X(s[3]).toFixed(1) + ' ' + Y(s[2]).toFixed(1)).join(' ') + (L.loop ? ' Z' : '');
-    lines += `<path d="${d}" fill="none" stroke="${L.color}" stroke-width="${Math.max(3, 3.5*Math.min(MM.zoom,2))}" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+    lines += `<path d="${d}" fill="none" stroke="${L.color}" stroke-width="${Math.max(3, 3.5*Math.min(MM.zoom,2))}" stroke-linejoin="round" stroke-linecap="round" class="mmline"/>`;
     for (const s of S) (named[s[0]] ||= {n:s[0], la:s[2], lo:s[3], codes:[], cols:[]}).codes.push(s[1]), named[s[0]].cols.push(L.color);
   }
   const stays = PLACES0.filter(p => p.kind==='stay' && p.city===city);
