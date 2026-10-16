@@ -59,6 +59,25 @@ select,input{font:15px var(--body);color:var(--ink);background:var(--paper);bord
 .check input{width:16px;height:16px;accent-color:var(--ai)}
 
 .kindtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+#mmPanel{padding-block:10px}
+.mmsum{cursor:pointer;font:700 17px var(--display);list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.mmsum::-webkit-details-marker{display:none}.mmsum::after{content:"▸";margin-left:auto;color:var(--muted)}#mmPanel[open] .mmsum::after{content:"▾"}
+.mmsum small{font:400 12.5px var(--body);color:var(--muted)}
+.mmbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
+.mmzoom{display:flex;align-items:center;gap:6px}.mmzoom .btn{padding:4px 12px;font-size:16px}.mmzoom span{font:600 13px var(--mono);min-width:44px;text-align:center}
+.mmlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;margin:4px 0 8px}
+.mmlegend span{display:inline-flex;align-items:center;gap:5px}.mmlegend i{width:16px;height:5px;border-radius:3px;display:inline-block}.mmlegend small{color:var(--muted);font-family:var(--mono)}
+.mmwrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px;background:#FBFBFD;-webkit-overflow-scrolling:touch}
+#mmSvg svg{display:block}
+.mmlb{fill:#1E2026;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.mmst{cursor:pointer}.mmst:hover circle:first-child,.mmst.on circle:first-child{fill:#FFE08A}
+.mmst:focus{outline:none}.mmst:focus-visible circle:first-child{stroke:#2747C8;stroke-width:3}
+.mmstay{pointer-events:none}.mmstayt{fill:#C2303A;font-weight:700;paint-order:stroke;stroke:#FBFBFD;stroke-width:3px}
+.mmpop{position:sticky;bottom:10px;margin-top:8px;background:var(--surface);border:1.5px solid var(--ai);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(20,30,60,.18)}
+.mmpop b{font-size:16px}.mmpop small{color:var(--muted)}.mmpop span{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.mmpop .btn{padding:6px 12px;font-size:13.5px}.mmx{border:0;background:none;font-size:22px;color:var(--muted);cursor:pointer}
+.mmnote{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+
 .o3{display:grid;grid-template-columns:repeat(auto-fit,minmax(98px,1fr));gap:6px;margin:0 0 6px}
 .o3>input{position:absolute;opacity:0;pointer-events:none}
 .o3>label{display:flex;flex-direction:column;gap:2px;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer;background:var(--surface);min-width:0}
@@ -334,6 +353,15 @@ select,input{border-radius:10px!important}
     </div>
   </section>
 
+
+  <details class="panel" id="mmPanel">
+    <summary class="mmsum">🗺 地鐵路線圖（大阪・京都・名古屋）<small>點車站可設為起點或目的地</small></summary>
+    <div class="mmbar"><div class="kindtabs" id="mmTabs"></div><div class="mmzoom"><button type="button" class="btn" data-mmz="0.67" aria-label="縮小">－</button><span id="mmZ">100%</span><button type="button" class="btn" data-mmz="1.5" aria-label="放大">＋</button></div></div>
+    <div class="mmlegend" id="mmLegend"></div>
+    <div class="mmwrap"><div id="mmSvg"></div></div>
+    <div class="mmpop" id="mmPop" hidden></div>
+    <p class="mmnote">依車站實際位置繪製的示意圖（只含市營地鐵，不含 JR、私鐵）。🏠 是你們住宿最近的車站。官方路線圖：<a id="mmOff" href="#" target="_blank" rel="noopener">官網 ↗</a></p>
+  </details>
   <section class="panel" aria-label="想去的地方">
     <h2>想去哪裡 <small id="pickHint">點一個地點</small></h2>
     <div class="kindtabs" id="kindTabs"></div>
@@ -1310,6 +1338,67 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('click', e => { if (e.target.classList && e.target.classList.contains('mdlg-back')) closeFrom(); });
 document.addEventListener('change', e => { if (e.target.id === 'dlgFrom' && e.target.value) chooseFrom(e.target.value); });
+
+/* ---------- 地鐵路線圖（依車站經緯度畫，點車站可設為起點／目的地） ---------- */
+const MM = {city:'osaka', zoom:1, pick:null};
+const MMOFF = {osaka:'https://subway.osakametro.co.jp/guide/routemap.php', kyoto:'https://www.city.kyoto.lg.jp/kotsu/page/0000008995.html', nagoya:'https://www.kotsu.city.nagoya.jp/jp/pc/SUBWAY/routemap.html'};
+function mmDraw(){
+  const box = $('#mmSvg'); if (!box) return;
+  const city = MM.city, Ls = LINES[city].lines;
+  const pts = Ls.flatMap(L => L.stations.filter(s => s[2]).map(s => [s[2], s[3]]));
+  const la0 = Math.min(...pts.map(p=>p[0])), la1 = Math.max(...pts.map(p=>p[0])), lo0 = Math.min(...pts.map(p=>p[1])), lo1 = Math.max(...pts.map(p=>p[1]));
+  const k = Math.cos(((la0+la1)/2) * Math.PI/180);
+  const base = Math.max(320, box.parentElement.clientWidth - 4);
+  const W = base * MM.zoom, pad = 46 * Math.max(1, MM.zoom * .7);
+  const sx = (W - pad*2) / ((lo1-lo0) * k), H = (la1-la0) * sx + pad*2;
+  const X = lo => pad + (lo-lo0) * k * sx, Y = la => pad + (la1-la) * sx;
+  const fs = MM.zoom >= 2 ? 11 : MM.zoom >= 1.5 ? 10 : 9;
+  const showAll = MM.zoom >= 1.5;
+  let lines = '', dots = '', labels = '';
+  const named = {};
+  for (const L of Ls){
+    const S = L.stations.filter(s => s[2]);
+    const d = S.map((s,i) => (i ? 'L' : 'M') + X(s[3]).toFixed(1) + ' ' + Y(s[2]).toFixed(1)).join(' ') + (L.loop ? ' Z' : '');
+    lines += `<path d="${d}" fill="none" stroke="${L.color}" stroke-width="${Math.max(3, 3.5*Math.min(MM.zoom,2))}" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+    for (const s of S) (named[s[0]] ||= {n:s[0], la:s[2], lo:s[3], codes:[], cols:[]}).codes.push(s[1]), named[s[0]].cols.push(L.color);
+  }
+  const stays = PLACES0.filter(p => p.kind==='stay' && p.city===city);
+  const stayN = new Set(stays.map(p => p.station));
+  for (const s of Object.values(named)){
+    const x = X(s.lo), y = Y(s.la), hub = s.codes.length > 1, r = hub ? 5.5 : 3.6;
+    const on = MM.pick === s.n;
+    dots += `<g class="mmst${on?' on':''}" data-mmst="${esc(s.n)}" tabindex="0" role="button" aria-label="${esc(s.n)}站 ${esc(s.codes.join('/'))}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${on?r+3:r}" fill="#fff" stroke="${hub ? '#1E2026' : s.cols[0]}" stroke-width="${hub?2.2:1.8}"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12" fill="transparent"/></g>`;
+    if (showAll || hub || stayN.has(s.n) || on)
+      labels += `<text x="${(x+7).toFixed(1)}" y="${(y-5).toFixed(1)}" font-size="${hub||on?fs+1:fs}" font-weight="${hub||on?700:500}" class="mmlb">${esc(s.n)}</text>`;
+  }
+  let marks = '';
+  for (const p of stays){ const c = COORD[city+'|'+p.station]; if (!c) continue;
+    marks += `<g class="mmstay"><text x="${(X(c[1])-9).toFixed(1)}" y="${(Y(c[0])+20).toFixed(1)}" font-size="${fs+5}">🏠</text><text x="${(X(c[1])+9).toFixed(1)}" y="${(Y(c[0])+16).toFixed(1)}" font-size="${fs}" class="mmstayt">住宿</text></g>`; }
+  box.innerHTML = `<svg viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" width="${W.toFixed(0)}" height="${H.toFixed(0)}" role="img" aria-label="${CITY[city]}地鐵路線圖">${lines}${dots}${labels}${marks}</svg>`;
+  $('#mmLegend').innerHTML = Ls.filter(L => !(city==='nagoya' && L.code==='E')).map(L => `<span><i style="background:${L.color}"></i>${esc(L.ja)}<small>${L.code}</small></span>`).join('') + (city==='nagoya' ? '<span><i style="background:#B074D6"></i>名港線<small>E</small></span>' : '');
+  $('#mmTabs').innerHTML = Object.entries(CITY).map(([c,l]) => `<button type="button" class="chip" data-mmcity="${c}" aria-pressed="${c===city}">${l}</button>`).join('');
+  $('#mmZ').textContent = `${Math.round(MM.zoom*100)}%`;
+  $('#mmOff').href = MMOFF[city];
+  mmPop();
+}
+function mmPop(){
+  const p = $('#mmPop'); if (!MM.pick){ p.hidden = true; return; }
+  const id = `sta:${MM.city}:${MM.pick}`, P = byId(id);
+  p.hidden = false;
+  p.innerHTML = `<b>${esc(MM.pick)}站</b> <small>${esc(P ? P.codes.join('／') : '')}</small><span><button type="button" class="btn" data-mmfrom="${esc(id)}">從這站出發</button><button type="button" class="btn primary" data-mmto="${esc(id)}">到這站怎麼走</button><button type="button" class="mmx" data-mmclose="1" aria-label="關閉">×</button></span>`;
+}
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-mmst]'); if (g){ MM.pick = g.dataset.mmst; mmDraw(); return; }
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.mmcity){ MM.city = b.dataset.mmcity; MM.pick = null; MM.zoom = 1; mmDraw(); }
+  else if (b.dataset.mmz){ MM.zoom = Math.min(5, Math.max(1, MM.zoom * (+b.dataset.mmz))); mmDraw(); }
+  else if (b.dataset.mmclose){ MM.pick = null; mmDraw(); }
+  else if (b.dataset.mmfrom){ $('#from').value = b.dataset.mmfrom; renderAll(); MM.pick = null; mmDraw(); $('#result').scrollIntoView({behavior:'smooth', block:'start'}); }
+  else if (b.dataset.mmto){ setMode('single'); st.sel = [b.dataset.mmto]; renderAll(); MM.pick = null; mmDraw(); if (!$('#from').value && typeof openFrom === 'function') openFrom(); else $('#result').scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+document.addEventListener('keydown', e => { const g = e.target.closest && e.target.closest('[data-mmst]'); if (g && (e.key==='Enter' || e.key===' ')){ e.preventDefault(); MM.pick = g.dataset.mmst; mmDraw(); } });
+$('#mmPanel').addEventListener('toggle', e => { if (e.target.open) mmDraw(); });
+addEventListener('resize', () => { if ($('#mmPanel').open) mmDraw(); });
 
 /* ---------- 啟動 ---------- */
 fillSelect($('#from')); fillSta(); renderMine();
