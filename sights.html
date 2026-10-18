@@ -214,6 +214,87 @@ select,input{border-radius:10px!important}
 .basketfab[hidden]{display:none!important}
 </style>
 <script src="jds.js?v=e538081f"></script>
+<style id="taste">/* 極簡編輯：骨白底、白卡、1px 淡線、幾乎無陰影、墨黑主按鈕、低飽和藍點綴 */
+:root{--paper:#F7F6F3;--surface:#FFFFFF;--ink:#2F3437;--muted:#787774;--line:#EAEAEA;--ai:#1F6C9F;--ai-soft:#E1F3FE;--kin:#2F3437;--kin-soft:#F1F0EC;--warn:#9F2F2D;
+--shadow:0 2px 8px rgba(0,0,0,.04);--shadow-sm:0 0 0 rgba(0,0,0,0);--ease:cubic-bezier(.16,1,.3,1);--grain:none}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+body{background:var(--paper)!important;color:var(--ink);font-weight:400}
+/* 細紙紋（不擋點擊） */
+body::before{display:var(--grain,block);content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .34  0 0 0 0 .22  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body>*{position:relative;z-index:1}
+header.site{z-index:40!important}
+
+/* 導覽列：紙色半透明、朱紅底線 */
+header.site{background:rgba(247,242,234,.92)!important;box-shadow:0 1px 0 var(--line)!important}
+.logo img{box-shadow:0 6px 16px -6px rgba(140,58,34,.45)!important}
+.brand-t small{color:var(--ai)!important}
+nav.sitetabs a{font-weight:500!important;color:var(--muted)!important;transition:color .2s var(--ease)}
+nav.sitetabs a:hover{color:var(--ink)!important}
+nav.sitetabs a[aria-current="page"]{color:var(--ink)!important;font-weight:600!important}
+nav.sitetabs a[aria-current="page"]::after{background:var(--ai)!important;height:2px!important;border-radius:0!important}
+
+/* 扉頁：標題更有份量、小標題改小寫斜體 */
+.hero{padding-block:56px 30px!important}
+.hero .eyebrow{font:italic 600 15px var(--latin)!important;letter-spacing:.02em!important;text-transform:none!important;color:var(--ai)!important;margin-bottom:10px!important}
+.hero .eyebrow::before{content:"";display:inline-block;width:22px;height:1.5px;background:currentColor;vertical-align:middle;margin-right:10px}
+.hero h1{font-size:clamp(36px,7vw,64px)!important;letter-spacing:-.01em!important;line-height:1.05!important}
+.hero .lede{max-width:44ch!important;font-size:16.5px!important;line-height:1.8!important;text-wrap:pretty}
+h2,h3{text-wrap:balance}
+
+/* 卡片與面板：去掉通用白卡＋重陰影，改紙色＋細線＋暖色陰影；容器圓角大、內層圓角小 */
+.card,.panel,section.sec,.sc,.st,.sx>details>summary,.trip .cost>div,.sgnav a,.tax,.pk{
+  background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow-sm)!important;
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease),border-color .25s var(--ease)}
+.card,.panel,.sc,.sgnav a,.tax{border-radius:20px!important}
+.sx>details>summary,.pk{border-radius:12px!important}
+@media (hover:hover){
+  .card:hover,.sc:hover,.sgnav a:hover,.pk:hover{transform:translateY(-3px);box-shadow:var(--shadow)!important;border-color:#D4C6B2!important}
+}
+.card img,.sc img,.sgnav img{border-radius:14px}
+
+/* 標籤與篩選：從膠囊改方角，選中改墨色實心 */
+.chip,.seg button,.tags span,.tag{border-radius:8px!important;font-weight:500!important;transition:background .2s var(--ease),color .2s var(--ease),transform .12s var(--ease)}
+.chip[aria-pressed="true"],.seg button[aria-pressed="true"],.dsw input:checked+label{background:var(--ink)!important;border-color:var(--ink)!important;color:#FBF8F2!important}
+.dsw label{border-radius:8px!important}
+.rk,.badge,.conf{border-radius:4px!important}
+
+/* 按鈕：主要＝朱紅實心，其餘文字連結化；按壓回饋 */
+.btn,.links a,.links button,.lnk a,.acts a,.acts .mini{border-radius:10px!important;transition:background .2s var(--ease),transform .12s var(--ease),box-shadow .2s var(--ease)}
+.btn.primary,.links .go,.sc .links .go{background:var(--ai)!important;border-color:var(--ai)!important;color:#fff!important;box-shadow:0 8px 18px -10px rgba(180,67,42,.7)}
+.btn.primary:hover,.links .go:hover{background:#9C3722!important}
+button:active,.btn:active,.chip:active,a.go:active,.fc:active{transform:translateY(1px) scale(.98)}
+:focus-visible{outline:2px solid var(--ai)!important;outline-offset:2px!important}
+
+/* 數字對齊 */
+.tm,.dist,.pr,.o3n,.subt span,.tl td:first-child,.big{font-variant-numeric:tabular-nums}
+
+/* 浮動按鈕 */
+.basketfab{background:var(--ink)!important;box-shadow:0 10px 24px -10px rgba(34,29,23,.6)!important;border-radius:14px!important}
+.fsfab{background:var(--ai)!important;border-radius:14px!important}
+.totop{background:var(--surface)!important;color:var(--ai)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow-sm)!important}
+
+/* 頁尾 */
+footer.wrap{color:var(--muted);border-top:1px solid var(--line);padding-block:28px 46px!important}
+.filters,nav.toc{background:rgba(243,238,229,.94)!important;border-bottom:1px solid var(--line)!important}
+.seg{border-radius:10px!important;overflow:hidden}
+.search{border-radius:10px!important;background:var(--surface)!important;border-color:var(--line)!important}
+
+
+header.site{background:rgba(255,255,255,.9)!important}
+.card,.panel,.sc,.sgnav a,.tax{border-radius:12px!important}.sx>details>summary,.pk{border-radius:8px!important}
+.btn.primary,.links .go,.sc .links .go{background:#111!important;border-color:#111!important;box-shadow:none!important}
+.btn.primary:hover,.links .go:hover{background:#333!important}
+.hero .eyebrow{color:var(--muted)!important}.hero .eyebrow::before{display:none}
+.hero h1{letter-spacing:-.03em!important}
+.tags span,.tag{border-radius:999px!important;font-size:12px!important}
+.filters,nav.toc{background:rgba(247,246,243,.95)!important}
+/* 全站補強 */
+.tax{border-top:4px solid var(--warn)!important}
+.sgnav .dtag{background:rgba(255,255,255,.94)!important}
+.st{border-left:4px solid var(--ai)!important}.st.k-visit{border-left-color:#956400!important}.st.k-food{border-left-color:#9F2F2D!important}
+</style>
 </head>
 <body>
 <header class="site"><div class="wrap bar">
