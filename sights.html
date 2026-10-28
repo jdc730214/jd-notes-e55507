@@ -45,6 +45,7 @@ main{padding-block:16px 48px}
 .group{margin-top:26px}
 .group>h2{font:900 28px/1.2 var(--display);margin:0 0 4px;display:flex;gap:12px;align-items:baseline}
 .group>h2 small{font:500 13px var(--body);color:var(--muted)}
+.amap{margin:12px 0 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}.amap a{display:block}.amap img{display:block;width:100%;height:auto}.amap figcaption{padding:8px 12px;font-size:12px;color:var(--muted);line-height:1.5}.amap figcaption b{color:var(--ink);font-weight:700}
 .part{margin-top:14px}
 .parth{font:900 19px var(--display);margin:0;display:flex;gap:8px;align-items:baseline;color:var(--ai)}
 .parth span{font:12px var(--mono);color:var(--muted)}
@@ -359,6 +360,7 @@ function render(){
   $('#q').addEventListener('input', e => { st.q = e.target.value; renderList(); });
   renderList();
 }
+const AREAMAPS = {"osaka": {"file": "sights-img/maps/osaka_areas.jpg", "title": "大阪經典區域 6 選", "caption": "梅田・大阪站／心齋橋・道頓堀・堀江／大阪城・中之島／難波・日本橋／天王寺・阿倍野・新世界／灣區 USJ・海遊館・天保山。點圖可放大", "credit": "LETSGO JP"}};
 function renderList(){
   const L = pool();
   if (!L.length){ $('#list').innerHTML = '<p class="empty">沒有符合的景點。</p>'; return; }
@@ -366,7 +368,8 @@ function renderList(){
     const G = L.filter(s=>s.group===k);
     const part = (arr, title) => { if (!arr.length) return ''; const areas = [...new Set(arr.map(s=>s.areaLabel))];
       return `<div class="part"><h3 class="parth">${title}<span>${arr.length}</span></h3>${areas.map(a => `<div class="area"><h3>${esc(a)}</h3><div class="grid">${arr.filter(s=>s.areaLabel===a).map(card).join('')}</div></div>`).join('')}</div>`; };
-    return `<section class="group"><h2>${l}<small>${G.length} 個景點</small></h2>${part(G.filter(s=>!s.sub), l+'市區')}${part(G.filter(s=>s.sub), l+'近郊')}</section>`;
+    const M = AREAMAPS[k]; const mp = (M && !st.q.trim()) ? `<figure class="amap"><a href="${esc(M.file)}" target="_blank" rel="noopener"><img src="${esc(M.file)}" alt="${esc(M.title)}" loading="lazy"></a><figcaption><b>${esc(M.title)}</b>・${esc(M.caption)}<br>來源：${esc(M.credit)}</figcaption></figure>` : '';
+    return `<section class="group"><h2>${l}<small>${G.length} 個景點</small></h2>${mp}${part(G.filter(s=>!s.sub), l+'市區')}${part(G.filter(s=>s.sub), l+'近郊')}</section>`;
   }).join('');
   observe();
   try { localStorage.setItem('sights-f', JSON.stringify({g:st.g})); } catch(e) {}
